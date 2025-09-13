@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\HappyHeadlines.WebApi.props" />
+</Project>

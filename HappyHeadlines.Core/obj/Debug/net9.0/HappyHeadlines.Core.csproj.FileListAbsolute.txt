@@ -1,0 +1,12 @@
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\bin\Debug\net9.0\HappyHeadlines.Core.deps.json
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\bin\Debug\net9.0\HappyHeadlines.Core.dll
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\bin\Debug\net9.0\HappyHeadlines.Core.pdb
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.AssemblyInfoInputs.cache
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.AssemblyInfo.cs
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.csproj.CoreCompileInputs.cache
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.sourcelink.json
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.dll
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\refint\HappyHeadlines.Core.dll
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\HappyHeadlines.Core.pdb
+C:\Users\mrtng\source\repos\HappyHeadlines\HappyHeadlines.Core\obj\Debug\net9.0\ref\HappyHeadlines.Core.dll
