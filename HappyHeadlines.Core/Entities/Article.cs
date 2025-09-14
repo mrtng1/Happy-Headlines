@@ -12,7 +12,7 @@ public class Article
 
 public enum Continent
 {
-    Global = 0,
+    Undefined = 0,
     Africa = 1,
     Antarctica = 2,
     Asia = 3,

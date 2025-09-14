@@ -4,7 +4,7 @@ using HappyHeadlines.Core.Interfaces;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
-public class ArticleRepository : IArticleRepository
+public class ArticleRepository : IRepository<Article>
 {
     private readonly ArticleDbContextFactory _contextFactory;
 
@@ -13,9 +13,9 @@ public class ArticleRepository : IArticleRepository
         _contextFactory = contextFactory;
     }
     
-    public async Task<Article> CreateArticle(CreateArticleRequest request)
+    public async Task<Article> Create(CreateArticleRequest request)
     {
-        using ArticleDbContext context = _contextFactory.Create(request.Continent);
+        await using var context = _contextFactory.Create(request.Continent);
     
         Article newArticle = new Article()
         {
@@ -34,22 +34,32 @@ public class ArticleRepository : IArticleRepository
     }
 
 
-    public Task<bool> DeleteArticle(Guid id)
+    public async Task<bool> Delete(Guid id, Continent continent)
+    {
+        await using var context = _contextFactory.Create(continent);
+
+        Article? article = await context.Articles.FindAsync(id);
+
+        if (article == null)
+            return false;
+
+        context.Articles.Remove(article);
+        await context.SaveChangesAsync();
+        return true;
+    }
+
+
+    public Task<IEnumerable<Article>> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Article>> GetAllArticles()
+    public Task<Article?> GetById(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Article?> GetArticleById(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Article?> UpdateArticle(Guid id, UpdateArticleRequest request)
+    public Task<Article?> Update(Guid id, UpdateArticleRequest request)
     {
         throw new NotImplementedException();
     }

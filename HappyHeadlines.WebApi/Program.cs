@@ -1,3 +1,4 @@
+using HappyHeadlines.Core.Entities;
 using HappyHeadlines.Core.Interfaces;
 using HappyHeadlines.Infrastructure;
 using HappyHeadlines.Infrastructure.Repositories;
@@ -9,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddScoped<IRepository<Article>, ArticleRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

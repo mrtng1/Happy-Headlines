@@ -1,1 +1,5 @@
-﻿/HappyHeadlines.WebApi/bin/
+﻿/HappyHeadlines.WebApi/obj/
+/HappyHeadlines.Core/obj/
+/HappyHeadlines.Core/bin/
+/HappyHeadlines.Infrastructure/bin/
+/HappyHeadlines.Infrastructure/obj/

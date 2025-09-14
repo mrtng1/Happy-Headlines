@@ -3,11 +3,11 @@ using HappyHeadlines.Core.Entities;
 
 namespace HappyHeadlines.Core.Interfaces;
 
-public interface IArticleRepository
+public interface IRepository<T>
 {
-    Task<IEnumerable<Article>> GetAllArticles();
-    Task<Article?> GetArticleById(Guid id);
-    Task<Article> CreateArticle(CreateArticleRequest request);
-    Task<Article?> UpdateArticle(Guid id, UpdateArticleRequest request);
-    Task<bool> DeleteArticle(Guid id);
+    Task<IEnumerable<T>> GetAll();
+    Task<T?> GetById(Guid id);
+    Task<T> Create(CreateArticleRequest request);
+    Task<T?> Update(Guid id, UpdateArticleRequest request);
+    Task<bool> Delete(Guid id, Continent continent);
 }

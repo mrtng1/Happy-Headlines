@@ -8,9 +8,9 @@ namespace HappyHeadlines.WebApi.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
-    private readonly IArticleRepository _articleRepository;
+    private readonly IRepository<Article> _articleRepository;
 
-    public ArticlesController(IArticleRepository articleRepository)
+    public ArticlesController(IRepository<Article> articleRepository)
     {
         _articleRepository = articleRepository;
     }
@@ -21,7 +21,7 @@ public class ArticlesController : ControllerBase
         Article createdArticle;
         try
         {
-            createdArticle = await  _articleRepository.CreateArticle(request);
+            createdArticle = await  _articleRepository.Create(request);
         }
         catch (Exception ex)
         {
@@ -37,7 +37,7 @@ public class ArticlesController : ControllerBase
         Article? article;
         try
         {
-            article = await _articleRepository.GetArticleById(id);
+            article = await _articleRepository.GetById(id);
         }
         catch (Exception ex)
         {
@@ -53,7 +53,7 @@ public class ArticlesController : ControllerBase
         Article? article;
         try
         {
-            article = await _articleRepository.UpdateArticle(id, request);
+            article = await _articleRepository.Update(id, request);
         }
         catch (Exception ex)
         {
@@ -66,9 +66,10 @@ public class ArticlesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
+        Continent continent = Continent.Australia; // test
         try
         {
-            bool deleted = await _articleRepository.DeleteArticle(id);
+            bool deleted = await _articleRepository.Delete(id, continent);
             if (!deleted)
             {
                 return NotFound("Article not found");
