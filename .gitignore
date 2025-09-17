@@ -1,5 +1,8 @@
-﻿/HappyHeadlines.WebApi/obj/
+﻿/HappyHeadlines.ArticleService/obj/
+/HappyHeadlines.ArticleService/bin/
 /HappyHeadlines.Core/obj/
 /HappyHeadlines.Core/bin/
 /HappyHeadlines.Infrastructure/bin/
 /HappyHeadlines.Infrastructure/obj/
+/HappyHeadlines.ArticleService/bin
+/HappyHeadlines.ArticleService/obj

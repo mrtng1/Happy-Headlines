@@ -1,6 +1,7 @@
 ﻿using HappyHeadlines.Core.DTOs;
 using HappyHeadlines.Core.Entities;
 using HappyHeadlines.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
@@ -11,6 +12,15 @@ public class ArticleRepository : IRepository<Article>
     public ArticleRepository(ArticleDbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
+    }
+    
+    public async Task<List<Article>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10)
+    {
+        await using var context = _contextFactory.Create(continent);
+        return await context.Articles
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
     
     public async Task<Article> Create(CreateArticleRequest request)
@@ -27,8 +37,16 @@ public class ArticleRepository : IRepository<Article>
         };
     
         newArticle = context.Articles.Add(newArticle).Entity;
-    
-        await context.SaveChangesAsync();
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     
         return newArticle;
     }

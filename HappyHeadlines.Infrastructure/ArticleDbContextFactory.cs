@@ -15,8 +15,8 @@ public class ArticleDbContextFactory
 
     public ArticleDbContext Create(Continent continent)
     {
-        string name = Enum.GetName(typeof(Continent), continent) ?? "Europe";
-        var connection = _config.GetConnectionString(name) ?? _config.GetConnectionString("Europe");
+        string name = Enum.GetName(typeof(Continent), continent) ?? "Global";
+        var connection = _config.GetConnectionString(name) ?? _config.GetConnectionString("Global");
 
         var options = new DbContextOptionsBuilder<ArticleDbContext>()
             .UseNpgsql(connection)

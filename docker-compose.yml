@@ -1,16 +1,18 @@
-﻿version: "3.9"
+﻿version: '3.8'
 
 services:
-  articleservice:
-    image: happyheadlines-webapi:latest
+  article-service:
     build:
-      context: ./HappyHeadlines.WebApi
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
+      context: .
+      dockerfile: HappyHeadlines.ArticleService/Dockerfile 
     deploy:
-      replicas: 3
-      restart_policy:
-        condition: on-failure
-      placement:
-        max_replicas_per_node: 3
+      replicas: 3 # amount of instances
+    environment:
+      - ConnectionStrings__Global=Host=db-global;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__Europe=Host=db-europe;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__Asia=Host=db-asia;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__Africa=Host=db-africa;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__NorthAmerica=Host=db-northamerica;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__SouthAmerica=Host=db-southamerica;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__Oceania=Host=db-oceania;Port=5432;Database=articles;Username=user;Password=pass
+      - ConnectionStrings__Antarctica=Host=db-antarctica;Port=5432;Database=articles;Username=user;Password=pass
