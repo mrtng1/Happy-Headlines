@@ -1,6 +1,0 @@
-@HappyHeadlines.WebApi_HostAddress = http://localhost:5189
-
-GET {{HappyHeadlines.WebApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
