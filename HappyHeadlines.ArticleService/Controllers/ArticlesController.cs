@@ -9,6 +9,7 @@ namespace HappyHeadlines.WebApi.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly IRepository<Article> _articleRepository;
+    const int pageSize = 30;
 
     public ArticlesController(IRepository<Article> articleRepository)
     {
@@ -29,6 +30,22 @@ public class ArticlesController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetById), new { id = createdArticle.Id });
+    }
+    
+    [HttpGet("GetArticles")]
+    public async Task<IActionResult> GetArticles(int page, Continent continent)
+    {
+        List<Article> articles;
+        try
+        {
+            articles = await _articleRepository.GetAll(continent, page, pageSize);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error retrieving articles: {ex.Message}");
+        }
+
+        return Ok(articles);
     }
 
     [HttpGet("{id}")]

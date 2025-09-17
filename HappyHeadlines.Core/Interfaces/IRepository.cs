@@ -5,7 +5,7 @@ namespace HappyHeadlines.Core.Interfaces;
 
 public interface IRepository<T>
 {
-    Task<IEnumerable<T>> GetAll();
+    Task<List<T>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10);
     Task<T?> GetById(Guid id);
     Task<T> Create(CreateArticleRequest request);
     Task<T?> Update(Guid id, UpdateArticleRequest request);

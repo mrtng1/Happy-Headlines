@@ -1,27 +1,13 @@
 ﻿version: '3.8'
 
 services:
-  # The Load Balancer (Reverse Proxy)
-  load-balancer:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mount the nginx configuration file
-    depends_on:
-      - article-service
-    networks:
-      - happyheadlines-network
-
-  # X-AXIS SCALING: Three instances of the ArticleService
   article-service:
     build:
       context: .
-      dockerfile: HappyHeadlines.ArticleService/Dockerfile # Path to your Web API's Dockerfile
+      dockerfile: HappyHeadlines.ArticleService/Dockerfile 
     deploy:
-      replicas: 3 # This is the magic line for X-axis scaling!
+      replicas: 3 # amount of instances
     environment:
-      # Connection strings are passed as environment variables
       - ConnectionStrings__Global=Host=db-global;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Europe=Host=db-europe;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Asia=Host=db-asia;Port=5432;Database=articles;Username=user;Password=pass
@@ -30,34 +16,3 @@ services:
       - ConnectionStrings__SouthAmerica=Host=db-southamerica;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Oceania=Host=db-oceania;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Antarctica=Host=db-antarctica;Port=5432;Database=articles;Username=user;Password=pass
-    depends_on:
-      - db-global
-      - db-europe
-      # ... add all other dbs
-    networks:
-      - happyheadlines-network
-
-  # Y-AXIS SCALING: Sharded Databases by Continent + Global
-    #db-global:
-    #image: postgres:15
-      #environment:
-      #POSTGRES_USER: user
-      #POSTGRES_PASSWORD: pass
-      #POSTGRES_DB: articles
-      #volumes:
-      #- global-data:/var/lib/postgresql/data
-      #networks:
-      #- happyheadlines-network
-
-# ... all other DBs
-
-# Volumes to persist database data
-volumes:
-  global-data:
-  europe-data:
-  asia-data:
-
-# Network to allow services to communicate by name
-networks:
-  happyheadlines-network:
-    driver: bridge
