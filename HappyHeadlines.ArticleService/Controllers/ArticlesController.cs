@@ -2,7 +2,8 @@
 using HappyHeadlines.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using HappyHeadlines.Core.Interfaces;
-namespace HappyHeadlines.WebApi.Controllers;
+
+namespace HappyHeadlines.DraftService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
