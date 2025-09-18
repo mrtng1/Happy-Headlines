@@ -1,0 +1,6 @@
+@HappyHeadlines.ProfanityService_HostAddress = http://localhost:5166
+
+GET {{HappyHeadlines.ProfanityService_HostAddress}}/ProfanityService/
+Accept: application/json
+
+###

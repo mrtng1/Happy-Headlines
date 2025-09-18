@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.Core", "Happ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.Infrastructure", "HappyHeadlines.Infrastructure\HappyHeadlines.Infrastructure.csproj", "{772568DB-0050-4498-9567-1316A91ADFA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.ProfanityService", "HappyHeadlines.ProfanityService\HappyHeadlines.ProfanityService.csproj", "{FD710463-D7F2-4329-A776-2CC20E1B8394}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,8 +57,23 @@ Global
 		{772568DB-0050-4498-9567-1316A91ADFA9}.Release|x64.Build.0 = Release|Any CPU
 		{772568DB-0050-4498-9567-1316A91ADFA9}.Release|x86.ActiveCfg = Release|Any CPU
 		{772568DB-0050-4498-9567-1316A91ADFA9}.Release|x86.Build.0 = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|x64.Build.0 = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD710463-D7F2-4329-A776-2CC20E1B8394}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C12AC7B8-7A01-4087-9074-FC7F77260D54}
 	EndGlobalSection
 EndGlobal
