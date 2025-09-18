@@ -23,23 +23,14 @@ public class ArticleRepository : IRepository<Article>
             .ToListAsync();
     }
     
-    public async Task<Article> Create(CreateArticleRequest request)
+    public async Task<Article> Create(Article newArticle)
     {
-        await using var context = _contextFactory.Create(request.Continent);
-    
-        Article newArticle = new Article()
-        {
-            Title = request.Title,
-            Content = request.Content,
-            Author = request.Author,
-            PublishedAt = DateTime.UtcNow,
-            Continent = request.Continent
-        };
-    
-        newArticle = context.Articles.Add(newArticle).Entity;
+        await using var context = _contextFactory.Create(newArticle.Continent);
 
         try
         {
+            newArticle = context.Articles.Add(newArticle).Entity;
+            
             await context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -77,7 +68,7 @@ public class ArticleRepository : IRepository<Article>
         throw new NotImplementedException();
     }
 
-    public Task<Article?> Update(Guid id, UpdateArticleRequest request)
+    public Task<Article?> Update(Guid id, Article updatedArticle)
     {
         throw new NotImplementedException();
     }

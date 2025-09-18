@@ -20,17 +20,18 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateArticleRequest request)
     {
-        Article createdArticle;
-        try
+        Article newArticle = new Article
         {
-            createdArticle = await  _articleRepository.Create(request);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error creating article: {ex.Message}");
-        }
-
-        return CreatedAtAction(nameof(GetById), new { id = createdArticle.Id });
+            Title = request.Title,
+            Content = request.Content,
+            Author = request.Author,
+            Continent = request.Continent,
+            PublishedAt = DateTime.UtcNow 
+        };
+        
+        await _articleRepository.Create(newArticle);
+        
+        return CreatedAtAction(nameof(GetById), new { id = newArticle.Id }, newArticle);
     }
     
     [HttpGet("GetArticles")]
@@ -68,17 +69,23 @@ public class ArticlesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateArticleRequest request)
     {
-        Article? article;
+        Article updatedArticle = new Article
+        {
+            Title = request.Title,
+            Content = request.Content,
+            Author = request.Author,
+            Continent = request.Continent,
+        };
         try
         {
-            article = await _articleRepository.Update(id, request);
+            updatedArticle = await _articleRepository.Update(id, updatedArticle);
         }
         catch (Exception ex)
         {
             return BadRequest($"Error updating article: {ex.Message}");
         }
         
-        return Ok(article);
+        return Ok(updatedArticle);
     }
 
     [HttpDelete("{id}")]

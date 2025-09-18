@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HappyHeadlines.ArticleService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5001586f35cd80a0cb64ecef3a100f9658f771ed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+986b42e7284d55519ad7e546451465798fff7353")]
 [assembly: System.Reflection.AssemblyProductAttribute("HappyHeadlines.ArticleService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HappyHeadlines.ArticleService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
