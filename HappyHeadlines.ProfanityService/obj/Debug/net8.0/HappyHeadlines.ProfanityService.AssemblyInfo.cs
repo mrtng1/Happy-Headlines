@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HappyHeadlines.ProfanityService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5001586f35cd80a0cb64ecef3a100f9658f771ed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+881d6064346cce2f3554dfea4710580066436091")]
 [assembly: System.Reflection.AssemblyProductAttribute("HappyHeadlines.ProfanityService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HappyHeadlines.ProfanityService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
