@@ -2,9 +2,6 @@ using HappyHeadlines.Core.Entities;
 using HappyHeadlines.Core.Interfaces;
 using HappyHeadlines.Infrastructure;
 using HappyHeadlines.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,5 +27,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.ApplyMigrations();
 
 app.Run();

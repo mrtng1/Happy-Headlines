@@ -13,15 +13,15 @@ public class ArticleDbContextFactory
         _config = config;
     }
 
-    public ArticleDbContext Create(Continent continent)
+    public AppDbContext Create(Continent continent)
     {
         string name = Enum.GetName(typeof(Continent), continent) ?? "Global";
         var connection = _config.GetConnectionString(name) ?? _config.GetConnectionString("Global");
 
-        var options = new DbContextOptionsBuilder<ArticleDbContext>()
+        var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(connection)
             .Options;
 
-        return new ArticleDbContext(options);
+        return new AppDbContext(options);
     }
 }

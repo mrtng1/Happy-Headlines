@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
-public class ArticleRepository : IRepository<Article>
+public class DraftRepository : IRepository<Article>
 {
     private readonly ArticleDbContextFactory _contextFactory;
 
-    public ArticleRepository(ArticleDbContextFactory contextFactory)
+    public DraftRepository(ArticleDbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
     }
@@ -56,39 +56,21 @@ public class ArticleRepository : IRepository<Article>
         await context.SaveChangesAsync();
         return true;
     }
-    
 
-    public async Task<Article?> GetById(Guid id)
+
+    public Task<IEnumerable<Article>> GetAll()
     {
-        foreach (Continent continent in Enum.GetValues(typeof(Continent)))
-        {
-            await using var context = _contextFactory.Create(continent);
-            var article = await context.Articles.FindAsync(id);
-            if (article != null)
-            {
-                return article;
-            }
-        }
-        return null;
+        throw new NotImplementedException();
     }
 
-    public async Task<Article?> Update(Guid id, Article updatedArticle)
+    public Task<Article?> GetById(Guid id)
     {
-        await using var context = _contextFactory.Create(updatedArticle.Continent);
+        throw new NotImplementedException();
+    }
 
-        Article? existingArticle = await context.Articles.FindAsync(id);
-
-        if (existingArticle == null)
-        {
-            return null;
-        }
-
-        existingArticle.Title = updatedArticle.Title;
-        existingArticle.Content = updatedArticle.Content;
-        existingArticle.Author = updatedArticle.Author;
-            
-        await context.SaveChangesAsync();
-        return existingArticle;
+    public Task<Article?> Update(Guid id, Article updatedArticle)
+    {
+        throw new NotImplementedException();
     }
     
 }
