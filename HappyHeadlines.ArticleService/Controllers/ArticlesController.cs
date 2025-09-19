@@ -21,8 +21,6 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateArticleRequest request)
     {
-        MonitorService.MonitorService.AppLog.Information("Creating new article by Author '{Author}' with Title '{Title}'", request.Author, request.Title);
-
         Article newArticle = new Article
         {
             Title = request.Title,
@@ -33,6 +31,8 @@ public class ArticlesController : ControllerBase
         };
         
         await _articleRepository.Create(newArticle);
+        
+        MonitorService.MonitorService.Log.Information("Creating new article by Author '{Author}' with Title '{Title}' at Articles'{Continent}' database", request.Author, request.Title, request.Continent.ToString());
         
         return CreatedAtAction(nameof(GetById), new { id = newArticle.Id }, newArticle);
     }
