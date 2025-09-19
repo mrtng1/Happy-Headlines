@@ -32,3 +32,10 @@ services:
       - ConnectionStrings__SouthAmerica=Host=db-southamerica;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Oceania=Host=db-oceania;Port=5432;Database=articles;Username=user;Password=pass
       - ConnectionStrings__Antarctica=Host=db-antarctica;Port=5432;Database=articles;Username=user;Password=pass
+  
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y

@@ -2,6 +2,7 @@
 using HappyHeadlines.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using HappyHeadlines.Core.Interfaces;
+using HappyHeadlines.MonitorService;
 
 namespace HappyHeadlines.ArticleService.Controllers;
 
@@ -20,6 +21,8 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateArticleRequest request)
     {
+        MonitorService.MonitorService.AppLog.Information("Creating new article by Author '{Author}' with Title '{Title}'", request.Author, request.Title);
+
         Article newArticle = new Article
         {
             Title = request.Title,
