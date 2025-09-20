@@ -2,7 +2,9 @@
 using HappyHeadlines.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using HappyHeadlines.Core.Interfaces;
-namespace HappyHeadlines.WebApi.Controllers;
+using HappyHeadlines.MonitorService;
+
+namespace HappyHeadlines.ArticleService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -19,17 +21,28 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateArticleRequest request)
     {
-        Article createdArticle;
+        Article newArticle = new Article
+        {
+            Title = request.Title,
+            Content = request.Content,
+            Author = request.Author,
+            Continent = request.Continent,
+            PublishedAt = DateTime.UtcNow 
+        };
+
         try
         {
-            createdArticle = await  _articleRepository.Create(request);
+            await _articleRepository.Create(newArticle);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return BadRequest($"Error creating article: {ex.Message}");
+            MonitorService.MonitorService.Log.Error("Error creating article: {Error}", e.Message);
+            throw;
         }
-
-        return CreatedAtAction(nameof(GetById), new { id = createdArticle.Id });
+        
+        MonitorService.MonitorService.Log.Information("Creating new article by Author '{Author}' with Title '{Title}' at Articles'{Continent}' database", request.Author, request.Title, request.Continent.ToString());
+        
+        return CreatedAtAction(nameof(GetById), new { id = newArticle.Id }, newArticle);
     }
     
     [HttpGet("GetArticles")]
@@ -42,6 +55,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error retrieving articles: {Error}", ex.Message);
             return BadRequest($"Error retrieving articles: {ex.Message}");
         }
 
@@ -49,15 +63,16 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, Continent continent)
     {
         Article? article;
         try
         {
-            article = await _articleRepository.GetById(id);
+            article = await _articleRepository.GetById(id, continent);
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error fetching article: {Error}", ex.Message);
             return BadRequest($"Error fetching article: {ex.Message}");
         }
         
@@ -67,23 +82,28 @@ public class ArticlesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateArticleRequest request)
     {
-        Article? article;
+        Article? updatedArticle = new Article
+        {
+            Title = request.Title,
+            Content = request.Content,
+            Author = request.Author,
+        };
         try
         {
-            article = await _articleRepository.Update(id, request);
+            updatedArticle = await _articleRepository.Update(id, updatedArticle);
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error updating article: {Error}", ex.Message);
             return BadRequest($"Error updating article: {ex.Message}");
         }
         
-        return Ok(article);
+        return Ok(updatedArticle);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, Continent continent)
     {
-        Continent continent = Continent.Australia; // test
         try
         {
             bool deleted = await _articleRepository.Delete(id, continent);
@@ -94,6 +114,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error deleting article: {Error}", ex.Message);
             return BadRequest($"Error deleting article: {ex.Message}");
         }
 

@@ -1,23 +1,14 @@
-using HappyHeadlines.Core.Entities;
-using HappyHeadlines.Core.Interfaces;
 using HappyHeadlines.Infrastructure;
-using HappyHeadlines.Infrastructure.Repositories;
-using HappyHeadlines.MonitorService;
 using Serilog;
 
 DotNetEnv.Env.Load();
 
-MonitorService.Initialize();
-
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddControllers();
-
-builder.Services.AddScoped<IRepository<Article>, ArticleRepository>();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddSingleton<DbContextFactory>();
 
 builder.Host.UseSerilog((context, configuration) => 
@@ -25,7 +16,7 @@ builder.Host.UseSerilog((context, configuration) =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -33,6 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
 
 app.MapControllers();
