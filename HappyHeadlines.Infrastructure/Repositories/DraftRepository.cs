@@ -1,35 +1,34 @@
-﻿using HappyHeadlines.Core.DTOs;
-using HappyHeadlines.Core.Entities;
+﻿using HappyHeadlines.Core.Entities;
 using HappyHeadlines.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
-public class DraftRepository : IRepository<Article>
+public class DraftRepository : IRepository<Draft>
 {
-    private readonly ArticleDbContextFactory _contextFactory;
+    private readonly DbContextFactory _contextFactory;
 
-    public DraftRepository(ArticleDbContextFactory contextFactory)
+    public DraftRepository(DbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
     }
     
-    public async Task<List<Article>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10)
+    public async Task<List<Draft>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10)
     {
         await using var context = _contextFactory.Create(continent);
-        return await context.Articles
+        return await context.Drafts
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
     }
     
-    public async Task<Article> Create(Article newArticle)
+    public async Task<Draft> Create(Draft newDraft)
     {
-        await using var context = _contextFactory.Create(newArticle.Continent);
+        await using var context = _contextFactory.Create(newDraft.Continent);
 
         try
         {
-            newArticle = context.Articles.Add(newArticle).Entity;
+            newDraft = context.Drafts.Add(newDraft).Entity;
             
             await context.SaveChangesAsync();
         }
@@ -39,7 +38,7 @@ public class DraftRepository : IRepository<Article>
             throw;
         }
     
-        return newArticle;
+        return newDraft;
     }
 
 
@@ -47,30 +46,45 @@ public class DraftRepository : IRepository<Article>
     {
         await using var context = _contextFactory.Create(continent);
 
-        Article? article = await context.Articles.FindAsync(id);
+        Draft? draft = await context.Drafts.FindAsync(id);
 
-        if (article == null)
+        if (draft == null)
             return false;
 
-        context.Articles.Remove(article);
+        context.Drafts.Remove(draft);
         await context.SaveChangesAsync();
         return true;
     }
 
-
-    public Task<IEnumerable<Article>> GetAll()
+    public async Task<Draft?> GetById(Guid id, Continent continent)
     {
-        throw new NotImplementedException();
+        await using var context = _contextFactory.Create(continent);
+        Draft? draft = await context.Drafts.FindAsync(id);
+        if (draft != null)
+        {
+            return draft;
+        }
+        
+        return null;
     }
 
-    public Task<Article?> GetById(Guid id)
+    public async Task<Draft?> Update(Guid id, Draft updatedDraft)
     {
-        throw new NotImplementedException();
-    }
+        await using var context = _contextFactory.Create(updatedDraft.Continent);
 
-    public Task<Article?> Update(Guid id, Article updatedArticle)
-    {
-        throw new NotImplementedException();
+        Draft? existingDraft = await context.Drafts.FindAsync(id);
+
+        if (existingDraft == null)
+        {
+            return null;
+        }
+
+        existingDraft.Title = updatedDraft.Title;
+        existingDraft.Content = updatedDraft.Content;
+        existingDraft.AuthorId = updatedDraft.AuthorId;
+            
+        await context.SaveChangesAsync();
+        return existingDraft;
     }
     
 }

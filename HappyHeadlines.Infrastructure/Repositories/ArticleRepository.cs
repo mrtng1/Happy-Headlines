@@ -7,9 +7,9 @@ namespace HappyHeadlines.Infrastructure.Repositories;
 
 public class ArticleRepository : IRepository<Article>
 {
-    private readonly ArticleDbContextFactory _contextFactory;
+    private readonly DbContextFactory _contextFactory;
 
-    public ArticleRepository(ArticleDbContextFactory contextFactory)
+    public ArticleRepository(DbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
     }
@@ -58,23 +58,21 @@ public class ArticleRepository : IRepository<Article>
     }
     
 
-    public async Task<Article?> GetById(Guid id)
+    public async Task<Article?> GetById(Guid id, Continent continent)
     {
-        foreach (Continent continent in Enum.GetValues(typeof(Continent)))
+        await using var context = _contextFactory.Create(continent);
+        var article = await context.Articles.FindAsync(id);
+        if (article != null)
         {
-            await using var context = _contextFactory.Create(continent);
-            var article = await context.Articles.FindAsync(id);
-            if (article != null)
-            {
-                return article;
-            }
+            return article;
         }
+        
         return null;
     }
 
-    public async Task<Article?> Update(Guid id, Article updatedArticle)
+    public async Task<Article?> Update(Guid id, Article updatedDraft)
     {
-        await using var context = _contextFactory.Create(updatedArticle.Continent);
+        await using var context = _contextFactory.Create(updatedDraft.Continent);
 
         Article? existingArticle = await context.Articles.FindAsync(id);
 
@@ -83,9 +81,9 @@ public class ArticleRepository : IRepository<Article>
             return null;
         }
 
-        existingArticle.Title = updatedArticle.Title;
-        existingArticle.Content = updatedArticle.Content;
-        existingArticle.Author = updatedArticle.Author;
+        existingArticle.Title = updatedDraft.Title;
+        existingArticle.Content = updatedDraft.Content;
+        existingArticle.Author = updatedDraft.Author;
             
         await context.SaveChangesAsync();
         return existingArticle;

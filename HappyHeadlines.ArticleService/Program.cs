@@ -5,6 +5,8 @@ using HappyHeadlines.Infrastructure.Repositories;
 using HappyHeadlines.MonitorService;
 using Serilog;
 
+DotNetEnv.Env.Load();
+
 MonitorService.Initialize();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +18,7 @@ builder.Services.AddScoped<IRepository<Article>, ArticleRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ArticleDbContextFactory>();
+builder.Services.AddSingleton<DbContextFactory>();
 
 builder.Host.UseSerilog((context, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration));

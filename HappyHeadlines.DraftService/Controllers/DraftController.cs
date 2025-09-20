@@ -32,7 +32,15 @@ public class DraftController : ControllerBase
             Continent = request.Continent
         };
 
-        await _draftRepository.Create(newDraft);
+        try
+        {
+            await _draftRepository.Create(newDraft);
+        }
+        catch (Exception e)
+        {
+            MonitorService.MonitorService.Log.Error("Error creating draft: {Error}", e.Message);
+            return StatusCode(500, "An error occurred while creating the draft.");
+        }
 
         _logger.LogInformation("Successfully created draft with ID {DraftId}", newDraft.Id);
 
@@ -44,22 +52,39 @@ public class DraftController : ControllerBase
     {
         _logger.LogInformation("Fetching drafts for page {Page} and continent {Continent}", page, continent);
 
-        var drafts = await _draftRepository.GetAll(continent, page, PageSize);
+        List<Draft> drafts = new List<Draft>();
         
-        _logger.LogInformation("Found {DraftCount} drafts.", drafts.Count());
-
+        try
+        {
+            drafts = await _draftRepository.GetAll(continent, page, PageSize);
+        }
+        catch (Exception ex)
+        {
+            MonitorService.MonitorService.Log.Error("Error retrieving drafts: {Error}", ex.Message);
+            return StatusCode(500, "An error occurred while retrieving drafts.");
+        }
+        
         return Ok(drafts);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, Continent continent)
     {
         _logger.LogInformation("Fetching draft with ID {DraftId}", id);
-        Draft draft = await _draftRepository.GetById(id);
+
+        Draft? draft;
+        try
+        {
+            draft = await _draftRepository.GetById(id, continent);
+        }
+        catch (Exception ex)
+        {
+            MonitorService.MonitorService.Log.Error("Error retrieving draft: {Error}", ex.Message);
+            return StatusCode(500, "An error occurred while retrieving drafts.");
+        }
 
         if (draft == null)
         {
-            _logger.LogWarning("Draft with ID {DraftId} not found.", id);
             return NotFound();
         }
 
@@ -69,39 +94,29 @@ public class DraftController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, UpdateDraftRequest request)
     {
-        _logger.LogInformation("Attempting to update draft with ID {DraftId}", id);
-        var existingDraft = await _draftRepository.GetById(id);
 
-        if (existingDraft == null)
+        Draft? updatedDraft = new Draft()
         {
-            _logger.LogWarning("Update failed. Draft with ID {DraftId} not found.", id);
-            return NotFound();
-        }
-
-        existingDraft.Title = request.Title;
-        existingDraft.Content = request.Content;
-        existingDraft.LastModifiedAt = DateTime.UtcNow;
-        existingDraft.Version++;
+            Title = request.Title,
+            Content = request.Content,
+        };
 
         try
         {
-            await _draftRepository.Update(id, existingDraft);
+            await _draftRepository.Update(id, updatedDraft);
         }
         catch (Exception e)
         {
-            _logger.LogError("Error updating draft with ID {DraftId}: {ErrorMessage}", id, e.Message);
+            MonitorService.MonitorService.Log.Error("Error updating draft: {Error}", e.Message);
             throw;
         }
         
-        _logger.LogInformation("Successfully updated draft with ID {DraftId}", id);
-
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, Continent continent)
     {
-        _logger.LogInformation("Attempting to delete draft with ID {DraftId}", id);
 
         try
         {
@@ -109,10 +124,9 @@ public class DraftController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogInformation("Error deleting draft with ID {DraftId}: {ErrorMessage}", id, e.Message);
+            MonitorService.MonitorService.Log.Error("Error deleting draft: {Error}", e.Message);
             throw;
         }
-        _logger.LogInformation("Successfully deleted draft with ID {DraftId}", id);
 
         return NoContent();
     }

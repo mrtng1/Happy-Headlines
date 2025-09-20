@@ -4,11 +4,11 @@ using HappyHeadlines.Core.Entities;
 
 namespace HappyHeadlines.Infrastructure;
 
-public class ArticleDbContextFactory
+public class DbContextFactory
 {
     private readonly IConfiguration _config;
 
-    public ArticleDbContextFactory(IConfiguration config)
+    public DbContextFactory(IConfiguration config)
     {
         _config = config;
     }

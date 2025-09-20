@@ -29,8 +29,16 @@ public class ArticlesController : ControllerBase
             Continent = request.Continent,
             PublishedAt = DateTime.UtcNow 
         };
-        
-        await _articleRepository.Create(newArticle);
+
+        try
+        {
+            await _articleRepository.Create(newArticle);
+        }
+        catch (Exception e)
+        {
+            MonitorService.MonitorService.Log.Error("Error creating article: {Error}", e.Message);
+            throw;
+        }
         
         MonitorService.MonitorService.Log.Information("Creating new article by Author '{Author}' with Title '{Title}' at Articles'{Continent}' database", request.Author, request.Title, request.Continent.ToString());
         
@@ -47,6 +55,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error retrieving articles: {Error}", ex.Message);
             return BadRequest($"Error retrieving articles: {ex.Message}");
         }
 
@@ -54,15 +63,16 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, Continent continent)
     {
         Article? article;
         try
         {
-            article = await _articleRepository.GetById(id);
+            article = await _articleRepository.GetById(id, continent);
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error fetching article: {Error}", ex.Message);
             return BadRequest($"Error fetching article: {ex.Message}");
         }
         
@@ -72,12 +82,11 @@ public class ArticlesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateArticleRequest request)
     {
-        Article updatedArticle = new Article
+        Article? updatedArticle = new Article
         {
             Title = request.Title,
             Content = request.Content,
             Author = request.Author,
-            Continent = request.Continent,
         };
         try
         {
@@ -85,6 +94,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error updating article: {Error}", ex.Message);
             return BadRequest($"Error updating article: {ex.Message}");
         }
         
@@ -92,9 +102,8 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, Continent continent)
     {
-        Continent continent = Continent.Australia; // test
         try
         {
             bool deleted = await _articleRepository.Delete(id, continent);
@@ -105,6 +114,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
+            MonitorService.MonitorService.Log.Error("Error deleting article: {Error}", ex.Message);
             return BadRequest($"Error deleting article: {ex.Message}");
         }
 
