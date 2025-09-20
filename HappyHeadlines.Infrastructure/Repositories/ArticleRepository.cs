@@ -1,34 +1,43 @@
 ﻿using HappyHeadlines.Core.DTOs;
 using HappyHeadlines.Core.Entities;
 using HappyHeadlines.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
 public class ArticleRepository : IRepository<Article>
 {
-    private readonly ArticleDbContextFactory _contextFactory;
+    private readonly DbContextFactory _contextFactory;
 
-    public ArticleRepository(ArticleDbContextFactory contextFactory)
+    public ArticleRepository(DbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
     }
     
-    public async Task<Article> Create(CreateArticleRequest request)
+    public async Task<List<Article>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10)
     {
-        await using var context = _contextFactory.Create(request.Continent);
+        await using var context = _contextFactory.Create(continent);
+        return await context.Articles
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
     
-        Article newArticle = new Article()
+    public async Task<Article> Create(Article newArticle)
+    {
+        await using var context = _contextFactory.Create(newArticle.Continent);
+
+        try
         {
-            Title = request.Title,
-            Content = request.Content,
-            Author = request.Author,
-            PublishedAt = DateTime.UtcNow,
-            Continent = request.Continent
-        };
-    
-        newArticle = context.Articles.Add(newArticle).Entity;
-    
-        await context.SaveChangesAsync();
+            newArticle = context.Articles.Add(newArticle).Entity;
+            
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     
         return newArticle;
     }
@@ -47,21 +56,37 @@ public class ArticleRepository : IRepository<Article>
         await context.SaveChangesAsync();
         return true;
     }
+    
 
-
-    public Task<IEnumerable<Article>> GetAll()
+    public async Task<Article?> GetById(Guid id, Continent continent)
     {
-        throw new NotImplementedException();
+        await using var context = _contextFactory.Create(continent);
+        var article = await context.Articles.FindAsync(id);
+        if (article != null)
+        {
+            return article;
+        }
+        
+        return null;
     }
 
-    public Task<Article?> GetById(Guid id)
+    public async Task<Article?> Update(Guid id, Article updatedDraft)
     {
-        throw new NotImplementedException();
-    }
+        await using var context = _contextFactory.Create(updatedDraft.Continent);
 
-    public Task<Article?> Update(Guid id, UpdateArticleRequest request)
-    {
-        throw new NotImplementedException();
+        Article? existingArticle = await context.Articles.FindAsync(id);
+
+        if (existingArticle == null)
+        {
+            return null;
+        }
+
+        existingArticle.Title = updatedDraft.Title;
+        existingArticle.Content = updatedDraft.Content;
+        existingArticle.Author = updatedDraft.Author;
+            
+        await context.SaveChangesAsync();
+        return existingArticle;
     }
     
 }

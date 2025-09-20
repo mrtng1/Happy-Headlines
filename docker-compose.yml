@@ -1,16 +1,41 @@
-﻿version: "3.9"
+﻿version: '3.8'
 
 services:
-  articleservice:
-    image: happyheadlines-webapi:latest
+  article-service:
     build:
-      context: ./HappyHeadlines.WebApi
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
+      context: .
+      dockerfile: HappyHeadlines.ArticleService/Dockerfile 
     deploy:
-      replicas: 3
-      restart_policy:
-        condition: on-failure
-      placement:
-        max_replicas_per_node: 3
+      replicas: 3 # amount of instances
+    environment:
+      - ConnectionStrings__Global=${GLOBAL_CONNECTION_STRING}
+      - ConnectionStrings__Europe=${EUROPE_CONNECTION_STRING}
+      - ConnectionStrings__Asia=${ASIA_CONNECTION_STRING}
+      - ConnectionStrings__Africa=${AFRICA_CONNECTION_STRING}
+      - ConnectionStrings__NorthAmerica=${NORTHAMERICA_CONNECTION_STRING}
+      - ConnectionStrings__SouthAmerica=${SOUTHAMERICA_CONNECTION_STRING}
+      - ConnectionStrings__Oceania=${OCEANIA_CONNECTION_STRING}
+      - ConnectionStrings__Antarctica=${ANTARCTICA_CONNECTION_STRING}
+                
+  draft-service:
+    build:
+      context: .
+      dockerfile: HappyHeadlines.DraftService/Dockerfile
+    deploy:
+      replicas: 3 # amount of instances
+    environment:
+      - ConnectionStrings__Global=${GLOBAL_CONNECTION_STRING}
+      - ConnectionStrings__Europe=${EUROPE_CONNECTION_STRING}
+      - ConnectionStrings__Asia=${ASIA_CONNECTION_STRING}
+      - ConnectionStrings__Africa=${AFRICA_CONNECTION_STRING}
+      - ConnectionStrings__NorthAmerica=${NORTHAMERICA_CONNECTION_STRING}
+      - ConnectionStrings__SouthAmerica=${SOUTHAMERICA_CONNECTION_STRING}
+      - ConnectionStrings__Oceania=${OCEANIA_CONNECTION_STRING}
+      - ConnectionStrings__Antarctica=${ANTARCTICA_CONNECTION_STRING}
+  
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y

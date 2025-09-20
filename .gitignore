@@ -1,6 +1,23 @@
-﻿/HappyHeadlines.WebApi/obj/
-/HappyHeadlines.Core/obj/
-/HappyHeadlines.Core/bin/
-/HappyHeadlines.Infrastructure/bin/
-/HappyHeadlines.Infrastructure/obj/
-/.vs
+﻿# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Rider files
+.idea/
+
+.env
