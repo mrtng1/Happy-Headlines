@@ -3,6 +3,9 @@ using HappyHeadlines.Core.Interfaces;
 using HappyHeadlines.Infrastructure;
 using HappyHeadlines.Infrastructure.Repositories;
 using HappyHeadlines.MonitorService;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 DotNetEnv.Env.Load();
