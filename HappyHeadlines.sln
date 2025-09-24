@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.DraftService
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.MonitorService", "HappyHeadlines.MonitorService\HappyHeadlines.MonitorService.csproj", "{E089CA5F-4BC9-4275-8E59-1E265C3DEEA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.CommentService", "HappyHeadlines.CommentService\HappyHeadlines.CommentService.csproj", "{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,18 @@ Global
 		{E089CA5F-4BC9-4275-8E59-1E265C3DEEA6}.Release|x64.Build.0 = Release|Any CPU
 		{E089CA5F-4BC9-4275-8E59-1E265C3DEEA6}.Release|x86.ActiveCfg = Release|Any CPU
 		{E089CA5F-4BC9-4275-8E59-1E265C3DEEA6}.Release|x86.Build.0 = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|x64.Build.0 = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Debug|x86.Build.0 = Debug|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|x64.ActiveCfg = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|x64.Build.0 = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BB78D59-7F6E-4CAB-BC62-E3D336FBFB28}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
