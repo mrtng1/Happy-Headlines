@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace HappyHeadlines.ArticleService.Entities;
 
-namespace HappyHeadlines.Core.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Article
 {

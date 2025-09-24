@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using HappyHeadlines.Core.Entities;
+using HappyHeadlines.ArticleService.Entities;
 
 namespace HappyHeadlines.Infrastructure;
 

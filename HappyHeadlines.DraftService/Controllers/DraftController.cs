@@ -1,7 +1,7 @@
 ﻿using HappyHeadlines.Core.DTOs;
 using HappyHeadlines.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
-using HappyHeadlines.Core.Interfaces;
+using HappyHeadlines.DraftService.Interfaces;
 
 namespace HappyHeadlines.DraftService.Controllers;
 
@@ -9,11 +9,11 @@ namespace HappyHeadlines.DraftService.Controllers;
 [Route("api/[controller]")]
 public class DraftController : ControllerBase
 {
-    private readonly IRepository<Draft> _draftRepository;
+    private readonly IDraftRepository _draftRepository;
     private readonly ILogger<DraftController> _logger;
     private const int PageSize = 30;
 
-    public DraftController(IRepository<Draft> draftRepository, ILogger<DraftController> logger)
+    public DraftController(IDraftRepository draftRepository, ILogger<DraftController> logger)
     {
         _draftRepository = draftRepository;
         _logger = logger;

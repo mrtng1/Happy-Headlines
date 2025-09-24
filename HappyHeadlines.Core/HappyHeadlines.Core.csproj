@@ -7,4 +7,9 @@
   </PropertyGroup>
 
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
 </Project>

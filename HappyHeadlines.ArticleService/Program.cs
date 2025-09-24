@@ -1,12 +1,7 @@
-using HappyHeadlines.Core.Entities;
-using HappyHeadlines.Core.Interfaces;
-using HappyHeadlines.Infrastructure;
-using HappyHeadlines.Infrastructure.Repositories;
+using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.MonitorService;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
+using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
 DotNetEnv.Env.Load();
 
@@ -16,12 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IRepository<Article>, ArticleRepository>();
+builder.Services.AddScoped<ArticleRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<DbContextFactory>();
+builder.Services.AddSingleton<ArticleDbContextFactory>();
 
 builder.Host.UseSerilog((context, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -40,6 +35,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.ApplyMigrations();
 
 app.Run();

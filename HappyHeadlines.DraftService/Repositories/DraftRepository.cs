@@ -1,22 +1,21 @@
 ﻿using HappyHeadlines.Core.Entities;
-using HappyHeadlines.Core.Interfaces;
+using HappyHeadlines.DraftService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.Infrastructure.Repositories;
 
-public class DraftRepository : IRepository<Draft>
+public class DraftRepository : IDraftRepository
 {
-    private readonly DbContextFactory _contextFactory;
 
-    public DraftRepository(DbContextFactory contextFactory)
+    private readonly DraftDbContext _context;
+    public DraftRepository(DraftDbContext context)
     {
-        _contextFactory = contextFactory;
+        _context = context;
     }
     
     public async Task<List<Draft>> GetAll(Continent continent, int pageNumber = 1, int pageSize = 10)
     {
-        await using var context = _contextFactory.Create(continent);
-        return await context.Drafts
+        return await _context.Drafts
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -24,13 +23,11 @@ public class DraftRepository : IRepository<Draft>
     
     public async Task<Draft> Create(Draft newDraft)
     {
-        await using var context = _contextFactory.Create(newDraft.Continent);
-
         try
         {
-            newDraft = context.Drafts.Add(newDraft).Entity;
+            newDraft = _context.Drafts.Add(newDraft).Entity;
             
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception e)
         {
@@ -44,22 +41,19 @@ public class DraftRepository : IRepository<Draft>
 
     public async Task<bool> Delete(Guid id, Continent continent)
     {
-        await using var context = _contextFactory.Create(continent);
-
-        Draft? draft = await context.Drafts.FindAsync(id);
+        Draft? draft = await _context.Drafts.FindAsync(id);
 
         if (draft == null)
             return false;
 
-        context.Drafts.Remove(draft);
-        await context.SaveChangesAsync();
+        _context.Drafts.Remove(draft);
+        await _context.SaveChangesAsync();
         return true;
     }
 
     public async Task<Draft?> GetById(Guid id, Continent continent)
     {
-        await using var context = _contextFactory.Create(continent);
-        Draft? draft = await context.Drafts.FindAsync(id);
+        Draft? draft = await _context.Drafts.FindAsync(id);
         if (draft != null)
         {
             return draft;
@@ -70,9 +64,7 @@ public class DraftRepository : IRepository<Draft>
 
     public async Task<Draft?> Update(Guid id, Draft updatedDraft)
     {
-        await using var context = _contextFactory.Create(updatedDraft.Continent);
-
-        Draft? existingDraft = await context.Drafts.FindAsync(id);
+        Draft? existingDraft = await _context.Drafts.FindAsync(id);
 
         if (existingDraft == null)
         {
@@ -83,7 +75,7 @@ public class DraftRepository : IRepository<Draft>
         existingDraft.Content = updatedDraft.Content;
         existingDraft.AuthorId = updatedDraft.AuthorId;
             
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return existingDraft;
     }
     

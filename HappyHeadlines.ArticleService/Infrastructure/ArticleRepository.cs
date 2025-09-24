@@ -1,15 +1,14 @@
-﻿using HappyHeadlines.Core.DTOs;
-using HappyHeadlines.Core.Entities;
-using HappyHeadlines.Core.Interfaces;
+using HappyHeadlines.ArticleService.Entities;
+using HappyHeadlines.WebApi.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace HappyHeadlines.Infrastructure.Repositories;
+namespace HappyHeadlines.ArticleService.Infrastructure;
 
-public class ArticleRepository : IRepository<Article>
+public class ArticleRepository : IArticleRepository
 {
-    private readonly DbContextFactory _contextFactory;
+    private readonly ArticleDbContextFactory _contextFactory;
 
-    public ArticleRepository(DbContextFactory contextFactory)
+    public ArticleRepository(ArticleDbContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
     }

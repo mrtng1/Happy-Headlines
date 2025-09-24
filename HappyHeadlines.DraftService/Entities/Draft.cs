@@ -28,3 +28,15 @@ public class Draft
     [Column("version")]
     public int Version { get; set; } = 1;
 }
+
+public enum Continent
+{
+    Global = 0,
+    Africa = 1,
+    Antarctica = 2,
+    Asia = 3,
+    Europe = 4,
+    NorthAmerica = 5,
+    Australia = 6,
+    SouthAmerica = 7
+}

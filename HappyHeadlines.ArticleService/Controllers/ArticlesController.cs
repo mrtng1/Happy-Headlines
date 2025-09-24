@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HappyHeadlines.Core.DTOs;
-using HappyHeadlines.Core.Entities;
+﻿using HappyHeadlines.ArticleService.Entities;
+using HappyHeadlines.ArticleService.DTOs;
+using HappyHeadlines.ArticleService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using HappyHeadlines.Core.Interfaces;
-using HappyHeadlines.MonitorService;
 
 namespace HappyHeadlines.ArticleService.Controllers;
 
@@ -13,10 +9,10 @@ namespace HappyHeadlines.ArticleService.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
-    private readonly IRepository<Article> _articleRepository;
+    private readonly ArticleRepository _articleRepository;
     const int pageSize = 30;
 
-    public ArticlesController(IRepository<Article> articleRepository)
+    public ArticlesController(ArticleRepository articleRepository)
     {
         _articleRepository = articleRepository;
     }
