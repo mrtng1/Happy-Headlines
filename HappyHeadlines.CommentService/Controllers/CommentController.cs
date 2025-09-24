@@ -24,7 +24,15 @@ namespace HappyHeadlines.CommentService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateCommentRequest request)
         {
-            CommentDto commentDto = await _commentService.CreateComment(request);
+            CommentDto commentDto;
+            try
+            {
+                commentDto = await _commentService.CreateComment(request);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             
             return CreatedAtAction(nameof(GetCommentsByArticle), new { articleId = commentDto.ArticleId }, commentDto);
         }
@@ -32,7 +40,16 @@ namespace HappyHeadlines.CommentService.Controllers
         [HttpGet("article/{articleId:guid}")]
         public async Task<IActionResult> GetCommentsByArticle(Guid articleId, [FromQuery] int page = 1)
         {
-            List<CommentDto> comments = await _commentService.GetCommentsByArticleId(articleId, page, PageSize);
+            List<CommentDto> comments = new List<CommentDto>();
+            try
+            {
+                comments = await _commentService.GetCommentsByArticleId(articleId, page, PageSize);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            
             return Ok(comments);
         }
 

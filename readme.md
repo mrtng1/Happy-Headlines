@@ -52,6 +52,7 @@
 + add an .env file in the HappyHeadlines.DraftService directory withe the following values filled out:
 
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=HappyHeadlines_Comments;Username=x;Password=
+PROFANITY_SERVICE_URL=
 
 ## Setting up the database
 + Create the database in your Postgres instance
