@@ -1,10 +1,17 @@
+using HappyHeadlines.DraftService.Interfaces;
+using HappyHeadlines.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<IDraftRepository, DraftRepository>();
+builder.Services.AddDbContext<DraftDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,5 +33,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// migrations on startup
+// using (var scope = app.Services.CreateScope())
+// {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<DraftDbContext>();
+//     dbContext.Database.Migrate();
+// }
 
 app.Run();

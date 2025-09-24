@@ -45,7 +45,7 @@ public class ArticlesController : ControllerBase
     }
     
     [HttpGet("GetArticles")]
-    public async Task<IActionResult> GetArticles(int page, Continent continent)
+    public async Task<IActionResult> GetArticles(int page = 1, Continent continent = Continent.Global)
     {
         List<Article> articles;
         try

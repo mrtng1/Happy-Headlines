@@ -1,12 +1,9 @@
 using HappyHeadlines.CommentService.Infrastructure;
-using HappyHeadlines.CommentService.Infrastructure;
 using HappyHeadlines.CommentService.Interfaces;
 using HappyHeadlines.CommentService.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
