@@ -1,10 +1,14 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.ArticleService", "HappyHeadlines.ArticleService\HappyHeadlines.ArticleService.csproj", "{C508B0D7-0762-4F24-955F-F2FDBE206131}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.ProfanityService", "HappyHeadlines.ProfanityService\HappyHeadlines.ProfanityService.csproj", "{FD710463-D7F2-4329-A776-2CC20E1B8394}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E089CA5F-4BC9-4275-8E59-1E265C3DEEA6} = {E089CA5F-4BC9-4275-8E59-1E265C3DEEA6}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyHeadlines.DraftService", "HappyHeadlines.DraftService\HappyHeadlines.DraftService.csproj", "{C5EDBFD5-5D96-419D-8983-9354695A4716}"
 EndProject
