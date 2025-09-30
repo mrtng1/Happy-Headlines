@@ -1,0 +1,14 @@
+﻿@page
+@model HappyHeadlines.NewsletterService.Templates.TemplateModels.DigestModel
+
+<h2>Dagens nyheder (@Model.Date.ToString("yyyy-MM-dd"))</h2>
+<ul>
+    @foreach (var a in Model.Articles)
+    {
+        <li><a href="@a.Url">@a.Title</a> – @a.Summary</li>
+    }
+</ul>
+<p><a href="{{unsubscribe}}">Afmeld</a></p>
+
+@{
+}
