@@ -1,5 +1,7 @@
 using HappyHeadlines.ArticleService.Infrastructure;
+using HappyHeadlines.ArticleService.Services;
 using HappyHeadlines.MonitorService;
+using HappyHeadlines.ArticleService.Interfaces;
 using Serilog;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
@@ -11,7 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<ArticleRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddSingleton<IArticleConsumer, ArticleConsumer>();
+builder.Services.AddHostedService<ArticleConsumerService>(); 
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

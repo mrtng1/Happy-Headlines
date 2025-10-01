@@ -1,5 +1,5 @@
 using HappyHeadlines.ArticleService.Entities;
-using HappyHeadlines.WebApi.Infrastructure;
+using HappyHeadlines.ArticleService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace HappyHeadlines.ArticleService.Infrastructure;

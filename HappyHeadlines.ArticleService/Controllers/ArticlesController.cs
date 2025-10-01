@@ -1,6 +1,7 @@
 ﻿using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.DTOs;
 using HappyHeadlines.ArticleService.Infrastructure;
+using HappyHeadlines.ArticleService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyHeadlines.ArticleService.Controllers;
@@ -9,10 +10,10 @@ namespace HappyHeadlines.ArticleService.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
-    private readonly ArticleRepository _articleRepository;
+    private readonly IArticleRepository _articleRepository;
     const int pageSize = 30;
 
-    public ArticlesController(ArticleRepository articleRepository)
+    public ArticlesController(IArticleRepository articleRepository)
     {
         _articleRepository = articleRepository;
     }
