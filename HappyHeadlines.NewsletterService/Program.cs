@@ -26,12 +26,13 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host(builder.Configuration["Rabbit:Host"] ?? "localhost", "/", h =>
-        {
-            h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
-            h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
-        });
+        cfg.Host("host.docker.internal", "/", h => { h.Username("guest"); h.Password("guest"); });
 
+        //cfg.Host(builder.Configuration["Rabbit:Host"] ?? "localhost", "/", h =>
+        //{
+        //    h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
+        //    h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
+        //});
         cfg.ReceiveEndpoint("newsletter-article-published", e =>
         {
             // Bind to an exchange where ArticleService publishes events.
