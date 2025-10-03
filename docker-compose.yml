@@ -1,41 +1,67 @@
 ﻿version: '3.8'
 
 services:
+  
+  postgres:
+    image: postgres:15
+    restart: always
+    env_file: 
+      - ./db.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
   article-service:
     build:
       context: .
-      dockerfile: HappyHeadlines.ArticleService/Dockerfile 
+      dockerfile: HappyHeadlines.ArticleService/Dockerfile
     deploy:
-      replicas: 3 # amount of instances
-    environment:
-      - ConnectionStrings__Global=${GLOBAL_CONNECTION_STRING}
-      - ConnectionStrings__Europe=${EUROPE_CONNECTION_STRING}
-      - ConnectionStrings__Asia=${ASIA_CONNECTION_STRING}
-      - ConnectionStrings__Africa=${AFRICA_CONNECTION_STRING}
-      - ConnectionStrings__NorthAmerica=${NORTHAMERICA_CONNECTION_STRING}
-      - ConnectionStrings__SouthAmerica=${SOUTHAMERICA_CONNECTION_STRING}
-      - ConnectionStrings__Oceania=${OCEANIA_CONNECTION_STRING}
-      - ConnectionStrings__Antarctica=${ANTARCTICA_CONNECTION_STRING}
+      replicas: 2
+    env_file:
+      - ./HappyHeadlines.ArticleService/.env
+    depends_on:
+       postgres:
+          condition: service_healthy
                 
   draft-service:
     build:
       context: .
       dockerfile: HappyHeadlines.DraftService/Dockerfile
     deploy:
-      replicas: 3 # amount of instances
-    environment:
-      - ConnectionStrings__Global=${GLOBAL_CONNECTION_STRING}
-      - ConnectionStrings__Europe=${EUROPE_CONNECTION_STRING}
-      - ConnectionStrings__Asia=${ASIA_CONNECTION_STRING}
-      - ConnectionStrings__Africa=${AFRICA_CONNECTION_STRING}
-      - ConnectionStrings__NorthAmerica=${NORTHAMERICA_CONNECTION_STRING}
-      - ConnectionStrings__SouthAmerica=${SOUTHAMERICA_CONNECTION_STRING}
-      - ConnectionStrings__Oceania=${OCEANIA_CONNECTION_STRING}
-      - ConnectionStrings__Antarctica=${ANTARCTICA_CONNECTION_STRING}
+      replicas: 2 # amount of instances
+    env_file:
+        - ./HappyHeadlines.DraftService/.env
+    depends_on:
+        postgres:
+          condition: service_healthy
+  
+  load-balancer:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - article-service
+      - draft-service
   
   seq:
     image: datalust/seq:latest
     ports:
       - "5341:80"
+    volumes:
+      - happy-headlines-data:/data
     environment:
       - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+        
+volumes:
+  postgres-data:
+  happy-headlines-data:

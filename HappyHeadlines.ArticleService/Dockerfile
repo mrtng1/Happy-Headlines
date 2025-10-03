@@ -6,7 +6,6 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["HappyHeadlines.ArticleService/HappyHeadlines.ArticleService.csproj", "HappyHeadlines.ArticleService/"]
-COPY ["HappyHeadlines.Core/HappyHeadlines.Core.csproj", "HappyHeadlines.Core/"]
 RUN dotnet restore "HappyHeadlines.ArticleService/HappyHeadlines.ArticleService.csproj"
 COPY . .
 WORKDIR "/src/HappyHeadlines.ArticleService"

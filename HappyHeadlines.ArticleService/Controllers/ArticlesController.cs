@@ -18,7 +18,7 @@ public class ArticlesController : ControllerBase
         _articleRepository = articleRepository;
     }
 
-    [HttpPost]
+    [HttpPost("CreateArticle")]
     public async Task<IActionResult> Create(CreateArticleRequest request)
     {
         Article newArticle = new Article
@@ -62,7 +62,7 @@ public class ArticlesController : ControllerBase
         return Ok(articles);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, Continent continent)
     {
         Article? article;

@@ -31,9 +31,10 @@ public class CommentService : ICommentService
             // Case of OUTAGE - circuit breaker active
             throw new Exception("Profanity Service is currently unavailable. Please try again later.");
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex)
         {
-            containsProfanity = false; // Default to false
+            //_logger.LogError(ex, "An HTTP error occurred while calling ProfanityService.");
+            throw;
         }
         
         if (containsProfanity)
