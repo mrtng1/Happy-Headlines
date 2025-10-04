@@ -33,7 +33,7 @@ builder.Services.AddMassTransit(x =>
         //    h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
         //    h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
         //});
-        cfg.ReceiveEndpoint("newsletter-article-published", e =>
+        cfg.ReceiveEndpoint("ArticleQueue", e =>
         {
             // Bind to an exchange where ArticleService publishes events.
             // Adjust to direct/topic + routing key if needed.
