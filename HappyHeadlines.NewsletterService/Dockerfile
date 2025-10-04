@@ -28,3 +28,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "HappyHeadlines.NewsletterService.dll"]
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+# sørg for mappen findes og kan skrives til af non-root bruger
+RUN mkdir -p /app/data && chmod -R 0777 /app/data
+

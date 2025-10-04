@@ -26,13 +26,13 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host("host.docker.internal", "/", h => { h.Username("guest"); h.Password("guest"); });
+        //cfg.Host("host.docker.internal", "/", h => { h.Username("guest"); h.Password("guest"); });
 
-        //cfg.Host(builder.Configuration["Rabbit:Host"] ?? "localhost", "/", h =>
-        //{
-        //    h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
-        //    h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
-        //});
+        cfg.Host(builder.Configuration["Rabbit:Host"] ?? "message-broker", "/", h =>
+        {
+            h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
+            h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
+        });
         cfg.ReceiveEndpoint("ArticleQueue", e =>
         {
             // Bind to an exchange where ArticleService publishes events.
@@ -80,13 +80,17 @@ builder.Services.AddHealthChecks()
 // -------------------------------------------------------
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDb>();
+    await db.Database.MigrateAsync();
+}
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();

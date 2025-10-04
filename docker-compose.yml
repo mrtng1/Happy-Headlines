@@ -77,7 +77,38 @@ services:
         - ./HappyHeadlines.PublisherService/.env
     depends_on:
       - message-broker
-      
+
+  subscriptions-service:
+    build:
+      context: .
+      dockerfile: HappyHeadlines.NewsletterService/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      # SQLite-fil i en skrivbar mappe
+      ConnectionStrings__db: Data Source=/app/data/newsletter.db;Cache=Shared;Mode=ReadWriteCreate
+      # RabbitMQ (via service-navn)
+      Rabbit__Host: message-broker
+      Rabbit__User: guest
+      Rabbit__Pass: guest
+      # Mail
+      Email__From: no-reply@happyheadlines.local
+      Email__Smtp__Host: mailhog
+      Email__Smtp__Port: "1025"
+    volumes:
+      - ./data:/app/data 
+    ports:
+      - "5088:8080"     # ← test direkte på http://localhost:5088
+    depends_on:
+      - message-broker
+      - mailhog
+
+     
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"     # SMTP
+      - "8025:8025"     # UI
+
   message-broker:
     image: rabbitmq:3-management
     ports:
@@ -115,3 +146,4 @@ volumes:
   postgres-data:
   happy-headlines-data:
   profanity-data:
+  newsletter-data: {}  
