@@ -10,19 +10,16 @@ namespace HappyHeadlines.DraftService.Controllers;
 public class DraftController : ControllerBase
 {
     private readonly IDraftRepository _draftRepository;
-    private readonly ILogger<DraftController> _logger;
     private const int PageSize = 30;
 
-    public DraftController(IDraftRepository draftRepository, ILogger<DraftController> logger)
+    public DraftController(IDraftRepository draftRepository)
     {
         _draftRepository = draftRepository;
-        _logger = logger;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateDraftRequest request)
     {
-        _logger.LogInformation("Attempting to create a new draft titled '{DraftTitle}'", request.Title);
 
         var newDraft = new Draft
         {
@@ -41,17 +38,13 @@ public class DraftController : ControllerBase
             MonitorService.MonitorService.Log.Error("Error creating draft: {Error}", e.Message);
             return StatusCode(500, "An error occurred while creating the draft.");
         }
-
-        _logger.LogInformation("Successfully created draft with ID {DraftId}", newDraft.Id);
-
+        
         return CreatedAtAction(nameof(GetById), new { id = newDraft.Id }, newDraft);
     }
     
     [HttpGet]
     public async Task<IActionResult> GetDrafts([FromQuery] int page = 1, [FromQuery] Continent continent = Continent.Global)
     {
-        _logger.LogInformation("Fetching drafts for page {Page} and continent {Continent}", page, continent);
-
         List<Draft> drafts = new List<Draft>();
         
         try
@@ -70,8 +63,6 @@ public class DraftController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, Continent continent)
     {
-        _logger.LogInformation("Fetching draft with ID {DraftId}", id);
-
         Draft? draft;
         try
         {

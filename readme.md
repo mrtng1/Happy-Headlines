@@ -17,58 +17,18 @@
 `docker run -d --name happyheadlines-seq -e ACCEPT_EULA=Y -e SEQ_FIRSTRUN_ADMINPASSWORD=guest -p 5341:80 datalust/seq:latest`
 
 
-# HappyHeadlines ArticleService
+## General Setup
 
-## Setting up the environment
-+ add an .env file in the HappyHeadlines.ArticleService directory withe the following values filled out:
-  ConnectionStrings__Global=Host=localhost;Database=ArticlesGlobal;Username=x;Password=
-  ConnectionStrings__Africa=Host=localhost;Database=ArticlesAfrica;Username=x;Password=
-  ConnectionStrings__Antarctica=Host=localhost;Database=ArticlesAntarctica;Username=x;Password=
-  ConnectionStrings__Asia=Host=localhost;Database=ArticlesAsia;Username=x;Password=
-  ConnectionStrings__Europe=Host=localhost;Database=ArticlesEurope;Username=x;Password=
-  ConnectionStrings__NorthAmerica=Host=localhost;Database=ArticlesNorthAmerica;Username=x;Password=
-  ConnectionStrings__Australia=Host=localhost;Database=ArticlesAustralia;Username=x;Password=
-  ConnectionStrings__SouthAmerica=Host=localhost;Database=ArticlesSouthAmerica;Username=x;Password=
+### Database setup
+Create a `db.env` file in the solution root directory with the following content:
 
-## Setting up the database
-+ Create the databases in your Postgres instance
-  - ArticlesGlobal
-  - ArticlesAfrica
-  - ArticlesAntarctica
-  - ArticlesAsia
-  - ArticlesEurope
-  - ArticlesNorthAmerica
-  - ArticlesAustralia
-  - ArticlesSouthAmerica
+POSTGRES_USER=
+POSTGRES_PASSWORD=
 
-+ Run: dotnet ef migrations add InitialCreate
-+ dotnet ef database update
+### Microservices Setup
 
+Each microservice contains a readme.md file with instructions on how to run it individually.
 
+## Running the system using docker compose
 
-# HappyHeadlines CommentService
-
-## Setting up the environment
-+ add an .env file in the HappyHeadlines.DraftService directory withe the following values filled out:
-
-ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=HappyHeadlines_Comments;Username=x;Password=
-PROFANITY_SERVICE_URL=
-
-## Setting up the database
-+ Create the database in your Postgres instance
-  - HappyHeadlines_Comments
-
-+ Run: dotnet ef migrations add InitialCreate
-+ dotnet ef database update
-
-# HappyHeadlines DraftService
-
-## Setting up the environment
-ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=HappyHeadlines_Drafts;Username=x;Password=
-
-## Setting up the database
-+ Create the database in your Postgres instance
-  - HappyHeadlines_Drafts
-
-+ Run: dotnet ef migrations add InitialCreate
-+ dotnet ef database update
+After filling out all the environment files run docker compose up from the solution root directory.

@@ -5,7 +5,7 @@ using HappyHeadlines.ProfanityService.Data;
 namespace HappyHeadlines.ProfanityService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/Profanity")]
     public class ProfanityServiceController : ControllerBase
     {
         private readonly HappyHeadlines.ProfanityService.Services.ProfanityService _profanityService;
@@ -18,6 +18,11 @@ namespace HappyHeadlines.ProfanityService.Controllers
         [HttpPost("check")]
         public async Task<IActionResult> CheckProfanity([FromBody] string text)
         {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return BadRequest("Text cannot be null or empty.");
+            }
+            
             bool hasProfanity = false;
             try
             {
@@ -28,8 +33,8 @@ namespace HappyHeadlines.ProfanityService.Controllers
                 MonitorService.MonitorService.Log.Error("Error checking profanity: {Error}", ex.Message);
                 return BadRequest($"Error checking profanity: {ex.Message}");
             }
-            MonitorService.MonitorService.Log.Information("Checked text for profanity. Result: {HasProfanity}", hasProfanity);
-            return Ok(new { hasProfanity });
+            //MonitorService.MonitorService.Log.Information("Checked text for profanity. Result: {HasProfanity}", hasProfanity);
+            return Ok(hasProfanity);
         }
 
         [HttpPost("add")]

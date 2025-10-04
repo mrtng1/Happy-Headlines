@@ -1,7 +1,7 @@
 using HappyHeadlines.ArticleService.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace HappyHeadlines.WebApi.Infrastructure;
+namespace HappyHeadlines.ArticleService.Infrastructure;
 
 public class ArticleDbContext : DbContext
 {

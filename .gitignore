@@ -21,4 +21,5 @@ bld/
 .idea/
 
 .env
+db.env
 /.vs
