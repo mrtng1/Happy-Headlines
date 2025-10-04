@@ -32,12 +32,12 @@ public class ArticleConsumer : IArticleConsumer, IDisposable
             return;
         }
 
-        var hostName = _configuration["RABBITMQ_HOSTNAME"] ?? "localhost";
-        var port = int.Parse(_configuration["RABBITMQ_PORT"] ?? "5672");
-        var userName = _configuration["RABBITMQ_USERNAME"] ?? "guest";
-        var password = _configuration["RABBITMQ_PASSWORD"] ?? "guest";
-        var queueName = _configuration["RABBITMQ_QUEUE_NAME"] ?? "ArticleQueue";
-        var virtualHost = _configuration["RABBITMQ_VIRTUAL_HOST"] ?? "/";
+        string hostName = _configuration["RABBITMQ_HOSTNAME"] ?? "localhost";
+        int port = int.Parse(_configuration["RABBITMQ_PORT"] ?? "5672");
+        string userName = _configuration["RABBITMQ_USERNAME"] ?? "guest";
+        string password = _configuration["RABBITMQ_PASSWORD"] ?? "guest";
+        string queueName = _configuration["RABBITMQ_QUEUE_NAME"] ?? "ArticleQueue";
+        string virtualHost = _configuration["RABBITMQ_VIRTUAL_HOST"] ?? "/";
         var prefetchCount = ushort.Parse(_configuration["RABBITMQ_PREFETCH_COUNT"] ?? "1");
 
         // Setup the connection factory

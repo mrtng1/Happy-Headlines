@@ -55,7 +55,6 @@ services:
         postgres:
           condition: service_healthy
           
-  # TODO: Make sure it runs
   profanity-service:
     build:
       context: .
@@ -68,6 +67,28 @@ services:
     volumes:
       - profanity-data:/app/data
   
+  publisher-service:
+    build:
+      context: .
+      dockerfile: HappyHeadlines.PublisherService/Dockerfile
+    deploy:
+      replicas: 1
+    env_file:
+        - ./HappyHeadlines.PublisherService/.env
+    depends_on:
+      - message-broker
+      
+  message-broker:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - happy-headlines-data:/var/lib/rabbitmq
+        
   load-balancer:
     image: nginx:latest
     ports:

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HappyHeadlines.PublisherService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/Publisher")]
 public class ArticlePublishedController : ControllerBase
 {
     private readonly IArticlePublisher _articlePublisher;

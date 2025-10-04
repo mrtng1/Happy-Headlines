@@ -8,13 +8,13 @@ public class Article
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [Column("title")]
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = "";
 
     [Column("content")]
-    public string Content { get; set; } = string.Empty;
+    public string Content { get; set; } = "";
 
     [Column("author")]
-    public string Author { get; set; } = string.Empty;
+    public string Author { get; set; } = "";
 
     [Column("published_at")]
     public DateTime PublishedAt { get; set; }
