@@ -6,3 +6,7 @@ CREATE DATABASE "ArticlesEurope";
 CREATE DATABASE "ArticlesNorthAmerica";
 CREATE DATABASE "ArticlesAustralia";
 CREATE DATABASE "ArticlesSouthAmerica";
+       
+CREATE DATABASE "HappyHeadlines_Drafts";
+       
+CREATE DATABASE "HappyHeadlines_Comments";

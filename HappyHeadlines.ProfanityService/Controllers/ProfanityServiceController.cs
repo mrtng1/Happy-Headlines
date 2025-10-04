@@ -5,7 +5,7 @@ using HappyHeadlines.ProfanityService.Data;
 namespace HappyHeadlines.ProfanityService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/Profanity")]
     public class ProfanityServiceController : ControllerBase
     {
         private readonly HappyHeadlines.ProfanityService.Services.ProfanityService _profanityService;

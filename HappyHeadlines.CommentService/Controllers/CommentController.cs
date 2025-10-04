@@ -21,7 +21,7 @@ namespace HappyHeadlines.CommentService.Controllers
             _commentService = commentService;
         }
 
-        [HttpPost]
+        [HttpPost("CreateComment")]
         public async Task<IActionResult> Create(CreateCommentRequest request)
         {
             CommentDto commentDto;

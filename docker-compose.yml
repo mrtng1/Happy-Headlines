@@ -41,6 +41,32 @@ services:
     depends_on:
         postgres:
           condition: service_healthy
+          
+          
+  comment-service:
+    build:
+      context: .
+      dockerfile: HappyHeadlines.CommentService/Dockerfile
+    deploy:
+      replicas: 2
+    env_file:
+        - ./HappyHeadlines.CommentService/.env
+    depends_on:
+        postgres:
+          condition: service_healthy
+          
+  # TODO: Make sure it runs
+  profanity-service:
+    build:
+      context: .
+      dockerfile: HappyHeadlines.ProfanityService/Dockerfile
+    deploy:
+      replicas: 1
+    depends_on:
+        postgres:
+          condition: service_healthy
+    volumes:
+      - profanity-data:/app/data
   
   load-balancer:
     image: nginx:latest
@@ -51,6 +77,8 @@ services:
     depends_on:
       - article-service
       - draft-service
+      - comment-service
+      - profanity-service
   
   seq:
     image: datalust/seq:latest
@@ -65,3 +93,4 @@ services:
 volumes:
   postgres-data:
   happy-headlines-data:
+  profanity-data:

@@ -22,7 +22,7 @@ public class ProfanityClient : IProfanityClient
         try
         {
             var content = new StringContent($"\"{text}\"", Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _httpClient.PostAsync("/Profanity/contains-profanity", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("api/Profanity/check", content);
 
             response.EnsureSuccessStatusCode();
 
