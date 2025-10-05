@@ -29,6 +29,8 @@ services:
     depends_on:
        postgres:
           condition: service_healthy
+       message-broker: 
+         condition: service_healthy
                 
   draft-service:
     build:
@@ -76,9 +78,10 @@ services:
     env_file:
         - ./HappyHeadlines.PublisherService/.env
     depends_on:
-      - message-broker
+      message-broker:
+          condition: service_healthy
 
-  subscriptions-service:
+  newsletter-service:
     build:
       context: .
       dockerfile: HappyHeadlines.NewsletterService/Dockerfile
@@ -97,8 +100,10 @@ services:
     volumes:
       - ./data:/app/data 
     depends_on:
-      - message-broker
-      - mailhog
+      message-broker:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
 
      
   mailhog:
@@ -117,6 +122,11 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - happy-headlines-data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
         
   load-balancer:
     image: nginx:latest
@@ -130,7 +140,7 @@ services:
       - comment-service
       - profanity-service
       - hh-webapp
-      - subscriptions-service
+      - newsletter-service
 
   hh-webapp:
    build:

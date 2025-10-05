@@ -1,7 +1,4 @@
 namespace HappyHeadlines.PublisherService.DTOs;
 
-public class PublishArticleRequest
-{
-    string Title { get; set; }
-    string Content { get; set; }
-}
+
+public record CreateArticleRequest(string Title, string Content, string Author, int Continent);

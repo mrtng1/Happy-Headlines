@@ -1,54 +1,27 @@
-using HappyHeadlines.NewsletterService.Consumers;   // ArticlePublishedConsumer
-using HappyHeadlines.NewsletterService.Jobs;        // DailyDigestJob
-using HappyHeadlines.NewsletterService.Data; // AppDb
-using HappyHeadlines.NewsletterService.Services;    // IEmailSender, SmtpEmailSender, ITemplateRenderer, RazorTemplateRenderer
-using MassTransit;
-using HappyHeadlines.NewsletterService.Consumers;
-using HappyHeadlines.NewsletterService.Data;
-using HappyHeadlines.NewsletterService.Services;
+using HappyHeadlines.NewsletterService.Jobs;        
+using HappyHeadlines.NewsletterService.Data; 
+using HappyHeadlines.NewsletterService.Services;    
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using HappyHeadlines.NewsletterService.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Controllers & OpenAPI ---
 builder.Services.AddControllers();
-builder.Services.AddOpenApi(); // keeps your current OpenAPI style
+builder.Services.AddOpenApi();
 
 // --- EF Core (SQLite) ---
 builder.Services.AddDbContext<AppDb>(o =>
     o.UseSqlite(builder.Configuration.GetConnectionString("db")));
 
-// --- MassTransit + RabbitMQ ---
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumer<ArticlePublishedConsumer>();
+// --- Messaging (Raw RabbitMQ Client) ---
+// 1. Register the core consumer logic as a Singleton
+builder.Services.AddSingleton<IArticleConsumer, ArticlePublishedConsumer>();
 
-    x.UsingRabbitMq((ctx, cfg) =>
-    {
-        //cfg.Host("host.docker.internal", "/", h => { h.Username("guest"); h.Password("guest"); });
+// 2. Register the hosted service to start and stop the consumer automatically
+builder.Services.AddHostedService<ArticleConsumerHostedService>();
 
-        cfg.Host(builder.Configuration["Rabbit:Host"] ?? "message-broker", "/", h =>
-        {
-            h.Username(builder.Configuration["Rabbit:User"] ?? "guest");
-            h.Password(builder.Configuration["Rabbit:Pass"] ?? "guest");
-        });
-        cfg.ReceiveEndpoint("ArticleQueue", e =>
-        {
-            // Bind to an exchange where ArticleService publishes events.
-            // Adjust to direct/topic + routing key if needed.
-            e.ConfigureConsumeTopology = false;
-            e.Bind("article.published", x => { x.ExchangeType = "fanout"; });
-
-            e.ConfigureConsumer<ArticlePublishedConsumer>(ctx);
-            e.PrefetchCount = 16;
-            e.UseMessageRetry(r => r.Exponential(5,
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromMinutes(1),
-                TimeSpan.FromSeconds(5)));
-        });
-    });
-});
 
 // --- Email + Razor templates ---
 builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();

@@ -17,12 +17,19 @@ public class ArticlePublishedController : ControllerBase
     }
 
     [HttpPost("publish")]
-    public IActionResult PublishArticle([FromBody] PublishArticleRequest request)
+    public IActionResult PublishArticle([FromBody] CreateArticleRequest request)
     {
-        string message = JsonSerializer.Serialize(request);
+        try
+        {
+            string message = JsonSerializer.Serialize(request);
         
-        // Publish to queue
-        _articlePublisher.PublishArticle(message);
+            // Publish to queue
+            _articlePublisher.PublishArticle(message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = $"Error publishing article: {ex.Message}" });
+        }
 
         return Ok(new { Message = "Article published to queue successfully." });
     }

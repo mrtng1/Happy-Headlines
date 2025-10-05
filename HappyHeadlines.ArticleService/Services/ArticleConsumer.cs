@@ -124,7 +124,7 @@ public class ArticleConsumer : IArticleConsumer, IDisposable
                 await _channel.BasicNackAsync(
                     deliveryTag: eventArgs.DeliveryTag,
                     multiple: false,
-                    requeue: true,
+                    requeue: false,
                     cancellationToken);
             }
         }
@@ -137,7 +137,7 @@ public class ArticleConsumer : IArticleConsumer, IDisposable
         try
         {
             // Deserialize JSON message into CreateArticleRequest DTO
-            var createArticleRequest = JsonSerializer.Deserialize<CreateArticleRequest>(message, new JsonSerializerOptions
+            CreateArticleRequest? createArticleRequest = JsonSerializer.Deserialize<CreateArticleRequest>(message, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });

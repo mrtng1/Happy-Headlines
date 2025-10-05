@@ -20,6 +20,11 @@
     </div>
 
     <div class="mb-2">
+        <label>Author</label><br />
+        <InputText class="form-control" @bind-Value="_model.Author" />
+    </div>
+
+    <div class="mb-2">
         <label>Content</label><br />
         <InputTextArea class="form-control" rows="10" @bind-Value="_model.Content" />
     </div>
@@ -52,7 +57,7 @@
             {
                 AlertClass = "alert-success";
                 AlertMessage = $"✅ {msg}";
-                // _model = new(); // uncomment to clear form
+                _model = new();
             }
             else
             {
@@ -63,12 +68,12 @@
         catch (TaskCanceledException)
         {
             AlertClass = "alert-danger";
-            AlertMessage = "❌ Timeout – serveren svarede ikke i tide.";
+            AlertMessage = "❌ Timeout – the server did not respond in time.";
         }
         catch (Exception ex)
         {
             AlertClass = "alert-danger";
-            AlertMessage = $"❌ Uventet fejl: {ex.Message}";
+            AlertMessage = $"❌ An unexpected error occurred: {ex.Message}";
         }
         finally { _busy = false; }
     }

@@ -9,4 +9,10 @@ public class PublishArticleRequest
 
     [Required, MinLength(10)]
     public string Content { get; set; } = string.Empty;
+    
+    [Required, MinLength(1)]
+    public string Author { get; set; } = string.Empty;
+    
+    [Required]
+    public int Continent { get; set; } = 0;
 }

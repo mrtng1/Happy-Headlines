@@ -6,11 +6,15 @@ using HappyHeadlines.ArticleService.Interfaces;
 using Serilog;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
-DotNetEnv.Env.Load();
 
 MonitorService.Initialize();
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    DotNetEnv.Env.Load();
+}
 
 builder.Services.AddControllers();
 
