@@ -83,7 +83,7 @@ services:
       context: .
       dockerfile: HappyHeadlines.NewsletterService/Dockerfile
     environment:
-      ASPNETCORE_URLS: http://+:8080
+      #ASPNETCORE_URLS: http://+:8080
       # SQLite-fil i en skrivbar mappe
       ConnectionStrings__db: Data Source=/app/data/newsletter.db;Cache=Shared;Mode=ReadWriteCreate
       # RabbitMQ (via service-navn)
@@ -96,8 +96,6 @@ services:
       Email__Smtp__Port: "1025"
     volumes:
       - ./data:/app/data 
-    ports:
-      - "5088:8080"     # ← test direkte på http://localhost:5088
     depends_on:
       - message-broker
       - mailhog
@@ -132,6 +130,7 @@ services:
       - comment-service
       - profanity-service
       - hh-webapp
+      - subscriptions-service
 
   hh-webapp:
    build:
