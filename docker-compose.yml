@@ -131,15 +131,12 @@ services:
       - draft-service
       - comment-service
       - profanity-service
-      - subscriptions-service
       - hh-webapp
 
   hh-webapp:
    build:
     context: .
     dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
-   ports:
-    - "8090:8080"  # for Blazor Server/Hosted
 
   
   seq:
