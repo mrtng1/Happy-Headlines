@@ -22,6 +22,18 @@ public class ArticleRepository : IArticleRepository
             .ToListAsync();
     }
     
+    public async Task<List<Article>> GetAllByDate(DateTime date, Continent continent, int pageNumber = 1, int pageSize = 10)
+    {
+        DateTime nextDay = date.AddDays(1);
+        
+        await using var context = _contextFactory.Create(continent);
+        return await context.Articles
+            .Where(a => a.PublishedAt >= date && a.PublishedAt < nextDay)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+    
     public async Task<Article> Create(Article newArticle)
     {
         await using var context = _contextFactory.Create(newArticle.Continent);

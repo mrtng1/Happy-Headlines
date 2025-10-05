@@ -61,6 +61,29 @@ public class ArticlesController : ControllerBase
 
         return Ok(articles);
     }
+    
+    [HttpGet("GetArticlesByDate")]
+    public async Task<IActionResult> GetArticlesByDate(DateTime date, int page = 1, Continent continent = Continent.Global)
+    {
+        if (date == null)
+        {
+            return BadRequest("No date provided");
+        }
+        
+        List<Article> articles;
+        try
+        {
+            DateTime utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+            articles = await _articleRepository.GetAllByDate(utcDate, continent, page, pageSize);
+        }
+        catch (Exception ex)
+        {
+            MonitorService.MonitorService.Log.Error("Error retrieving articles: {Error}", ex.Message);
+            return BadRequest($"Error retrieving articles: {ex.Message}");
+        }
+
+        return Ok(articles);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, Continent continent)
