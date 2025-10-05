@@ -9,4 +9,6 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 builder.Services.AddScoped<PublisherApi>();
+builder.Services.AddScoped<ArticleApi>();
+builder.Services.AddScoped<CommentApi>();
 await builder.Build().RunAsync();

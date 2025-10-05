@@ -1,0 +1,110 @@
+﻿@page "/articles/{Id:guid}"
+@using System.Web
+@using HappyHeadlines.WebApp.Client.Models
+@using HappyHeadlines.WebApp.Client.Services
+@inject ArticleApi ArticlesApi
+@inject CommentApi CommentsApi
+@inject NavigationManager Nav
+
+@if (_article is null)
+{
+    <p>Loading…</p>
+}
+else
+{
+    <h3>@_article.Title</h3>
+    <div class="mb-3">
+        <div class="text-muted small">By @_article.Author • @_article.Continent • @_article.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+        <p class="mt-2">@_article.Content</p>
+    </div>
+
+    <h5>Comments</h5>
+
+    @if (_comments is null)
+    {
+        <p>Loading…</p>
+    }
+    else if (_comments.Count == 0)
+    {
+        <p>No comments yet. Be the first!</p>
+    }
+    else
+    {
+        <ul class="list-group mb-3">
+            @foreach (var c in _comments)
+            {
+                <li class="list-group-item">
+                    <div class="fw-bold">@c.Author</div>
+                    <div>@c.Content</div>
+                    <div class="text-muted small">@c.CreatedAt.ToLocalTime():g</div>
+                </li>
+            }
+        </ul>
+    }
+
+    <EditForm Model="_newComment" OnValidSubmit="SubmitComment">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-2">
+            <label>Your name</label>
+            <InputText class="form-control" @bind-Value="_newComment.Author" />
+        </div>
+        <div class="mb-2">
+            <label>Your comment</label>
+            <InputTextArea class="form-control" rows="4" @bind-Value="_newComment.Content" />
+        </div>
+        <button class="btn btn-primary" disabled="@_posting">
+            @(_posting ? "Posting..." : "Post comment")
+        </button>
+    </EditForm>
+
+    @if (!string.IsNullOrWhiteSpace(_alert))
+    {
+        <div class="alert @(_ok ? "alert-success" : "alert-danger") mt-3">@_alert</div>
+    }
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    HappyHeadlines.WebApp.Client.Models.Article? _article;
+    List<CommentItem>? _comments;
+
+    CreateCommentRequest _newComment = new();
+    bool _posting;
+    string? _alert;
+    bool _ok;
+
+    string _continent = "Global";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // læs ?continent= fra query (default Global)
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var q = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        _continent = string.IsNullOrWhiteSpace(q["continent"]) ? "Global" : q["continent"]!;
+
+        _article = await ArticlesApi.GetAsync(Id, _continent);
+        if (_article is not null)
+        {
+            _newComment.ArticleId = _article.Id;
+            _comments = await CommentsApi.GetForArticleAsync(_article.Id);
+        }
+    }
+
+    async Task SubmitComment()
+    {
+        _posting = true; _alert = null; _ok = false;
+        try
+        {
+            var (ok, err) = await CommentsApi.CreateAsync(_newComment);
+            _ok = ok;
+            _alert = ok ? "Thanks for your comment!" : (err ?? "Failed to post comment.");
+            if (ok)
+            {
+                _newComment.Content = "";
+                _comments = await CommentsApi.GetForArticleAsync(_article!.Id);
+            }
+        }
+        finally { _posting = false; }
+    }
+}
