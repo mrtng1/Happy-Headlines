@@ -1,4 +1,4 @@
-﻿version: '3.8'
+﻿# version: '3.8'
 
 services:
   
@@ -131,6 +131,13 @@ services:
       - draft-service
       - comment-service
       - profanity-service
+      - hh-webapp
+
+  hh-webapp:
+   build:
+    context: .
+    dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
+
   
   seq:
     image: datalust/seq:latest

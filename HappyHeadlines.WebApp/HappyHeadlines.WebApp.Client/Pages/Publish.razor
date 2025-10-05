@@ -1,0 +1,75 @@
+﻿@page "/publish"
+@using HappyHeadlines.WebApp.Client.Models
+@using HappyHeadlines.WebApp.Client.Services
+@inject PublisherApi Api
+
+<h3>Publish article</h3>
+
+@if (!string.IsNullOrWhiteSpace(AlertMessage))
+{
+    <div class="alert @AlertClass" role="alert">@((MarkupString)AlertMessage)</div>
+}
+
+<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Title</label><br />
+        <InputText class="form-control" @bind-Value="_model.Title" />
+    </div>
+
+    <div class="mb-2">
+        <label>Content</label><br />
+        <InputTextArea class="form-control" rows="10" @bind-Value="_model.Content" />
+    </div>
+
+    <button class="btn btn-primary" disabled="@_busy" type="submit">
+        @if (_busy)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        <span class="ms-1">@(_busy ? "Publishing..." : "Publish")</span>
+    </button>
+</EditForm>
+
+@code {
+    PublishArticleRequest _model = new();
+    bool _busy;
+    string? AlertMessage;
+    string AlertClass = "alert-info";
+
+    async Task SubmitAsync()
+    {
+        _busy = true; AlertMessage = null; StateHasChanged();
+
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            var (ok, msg) = await Api.PublishAsync(_model, cts.Token);
+
+            if (ok)
+            {
+                AlertClass = "alert-success";
+                AlertMessage = $"✅ {msg}";
+                // _model = new(); // uncomment to clear form
+            }
+            else
+            {
+                AlertClass = "alert-danger";
+                AlertMessage = $"❌ {msg}";
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            AlertClass = "alert-danger";
+            AlertMessage = "❌ Timeout – serveren svarede ikke i tide.";
+        }
+        catch (Exception ex)
+        {
+            AlertClass = "alert-danger";
+            AlertMessage = $"❌ Uventet fejl: {ex.Message}";
+        }
+        finally { _busy = false; }
+    }
+}
