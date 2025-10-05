@@ -1,0 +1,49 @@
+﻿@page "/subscribe"
+@inject HttpClient Http
+
+<h3>Tilmeld nyhedsbrev</h3>
+
+@if (message is not null)
+{
+    <p>@message</p>
+}
+
+<EditForm Model="model" OnValidSubmit="Submit">
+    <InputText @bind-Value="model.Email" placeholder="email@example.com" />
+    <br />
+    <label><InputCheckbox @bind-Value="model.WantsImmediate" /> Immediate</label>
+    <label class="ms-3"><InputCheckbox @bind-Value="model.WantsDaily" /> Daily</label>
+    <br />
+    <InputText @bind-Value="model.Continent" placeholder="Global" />
+    <br />
+    <button type="submit">Tilmeld</button>
+</EditForm>
+
+@code {
+    string? message;
+
+    CreateSubscriptionRequest model = new()
+        {
+            Email = "",
+            WantsImmediate = true,
+            WantsDaily = false,
+            Continent = "Global"
+        };
+
+    async Task Submit()
+    {
+        var resp = await Http.PostAsJsonAsync("/api/subscriptions", model);
+        message = resp.IsSuccessStatusCode
+            ? "Tilmeldt!"
+            : $"Fejl: {(int)resp.StatusCode} {await resp.Content.ReadAsStringAsync()}";
+    }
+
+    public class CreateSubscriptionRequest
+    {
+        public string Email { get; set; } = "";
+        public bool WantsImmediate { get; set; }
+        public bool WantsDaily { get; set; }
+        public string? Continent { get; set; }
+        public string[]? Categories { get; set; }
+    }
+}

@@ -1,4 +1,4 @@
-﻿version: '3.8'
+﻿# version: '3.8'
 
 services:
   
@@ -131,6 +131,16 @@ services:
       - draft-service
       - comment-service
       - profanity-service
+      - subscriptions-service
+      - hh-webapp
+
+  hh-webapp:
+   build:
+    context: .
+    dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
+   ports:
+    - "8090:8080"  # for Blazor Server/Hosted
+
   
   seq:
     image: datalust/seq:latest

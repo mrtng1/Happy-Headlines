@@ -1,0 +1,134 @@
+﻿@page "/publish"
+@using HappyHeadlines.WebApp.Client.Models
+@inject HttpClient Http
+
+<h3>Publish article</h3>
+
+@if (!string.IsNullOrWhiteSpace(AlertMessage))
+{
+    <div class="alert @AlertClass" role="alert">@((MarkupString)AlertMessage)</div>
+}
+
+<EditForm Model="_model" OnValidSubmit="PublishAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Title</label><br />
+        <InputText class="form-control" @bind-Value="_model.Title" />
+    </div>
+
+    <div class="mb-2">
+        <label>Author</label><br />
+        <InputText class="form-control" @bind-Value="_model.Author" />
+    </div>
+
+    <div class="mb-2">
+        <label>Continent</label><br />
+        <InputSelect class="form-control" @bind-Value="_model.Continent">
+            <option>Global</option>
+            <option>Europe</option>
+            <option>NorthAmerica</option>
+            <option>SouthAmerica</option>
+            <option>Asia</option>
+            <option>Africa</option>
+            <option>Australia</option>
+            <option>Antarctica</option>
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Content</label><br />
+        <InputTextArea class="form-control" rows="10" @bind-Value="_model.Content" />
+    </div>
+
+    <button class="btn btn-primary" disabled="@_busy" type="submit">
+        @if (_busy)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        <span class="ms-1">@(_busy ? "Publishing..." : "Publish")</span>
+    </button>
+
+</EditForm>
+
+@code {
+    PublishArticleRequest _model = new();
+    bool _busy;
+    string? AlertMessage;
+    string AlertClass = "alert-info";
+
+    async Task PublishAsync()
+    {
+        _busy = true;
+        AlertMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            var resp = await Http.PostAsJsonAsync("/api/Publisher/publish", _model, cts.Token);
+
+            var body = await resp.Content.ReadAsStringAsync(cts.Token);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                // Forvent fx: { "message": "Article published to queue successfully." }
+                var serverMsg = TryExtractMessage(body) ?? "Published successfully.";
+                AlertClass = "alert-success";
+                AlertMessage = $"✅ {serverMsg}";
+                // evt. nulstil formular:
+                // _model = new();
+            }
+            else
+            {
+                // Prøv at læse ProblemDetails eller plain tekst
+                var details = TryExtractProblemDetails(body) ?? body;
+                AlertClass = "alert-danger";
+                AlertMessage = $"❌ Error {(int)resp.StatusCode} {resp.ReasonPhrase}<br/><small>{details}</small>";
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            AlertClass = "alert-danger";
+            AlertMessage = "❌ Timeout. Serveren svarede ikke i tide.";
+        }
+        catch (Exception ex)
+        {
+            AlertClass = "alert-danger";
+            AlertMessage = $"❌ Uventet fejl: {ex.Message}";
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    // Hjælpere: træk pæn besked ud, uanset om server sender {message:"..."} eller ProblemDetails
+    string? TryExtractMessage(string json)
+    {
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("message", out var m)) return m.GetString();
+            if (doc.RootElement.TryGetProperty("Message", out m)) return m.GetString();
+        }
+        catch { /* ignore */ }
+        return null;
+    }
+
+    string? TryExtractProblemDetails(string json)
+    {
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            // RFC7807 ProblemDetails: title + detail
+            var title = doc.RootElement.TryGetProperty("title", out var t) ? t.GetString() : null;
+            var detail = doc.RootElement.TryGetProperty("detail", out var d) ? d.GetString() : null;
+            if (!string.IsNullOrWhiteSpace(title) || !string.IsNullOrWhiteSpace(detail))
+                return $"{title} {detail}".Trim();
+        }
+        catch { /* ignore */ }
+        return null;
+    }
+}
