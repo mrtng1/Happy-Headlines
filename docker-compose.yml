@@ -147,7 +147,16 @@ services:
     context: .
     dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
 
-  
+  c4:
+    image: structurizr/lite:latest
+    ports:
+      - "18080:8080"
+    volumes:
+      - ./docs:/usr/local/structurizr
+    # valgfrit: sæt en base URL hvis du vil linke ind fra README
+    environment:
+      - STRUCTURIZR_WORKSPACE_PATH=/usr/local/structurizr/workspace.dsl
+
   seq:
     image: datalust/seq:latest
     ports:
