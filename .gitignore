@@ -23,3 +23,5 @@ bld/
 .env
 db.env
 /.vs
+/data
+/data/newsletter.db
