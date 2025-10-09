@@ -1,15 +1,11 @@
-using System.Collections;
 using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.ArticleService.Services;
-using HappyHeadlines.MonitorService;
 using HappyHeadlines.ArticleService.Interfaces;
 using Serilog;
 using StackExchange.Redis;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
-
-MonitorService.Initialize();
 
 var builder = WebApplication.CreateBuilder(args);
 

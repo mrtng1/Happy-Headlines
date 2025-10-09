@@ -11,11 +11,13 @@ namespace HappyHeadlines.ArticleService.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly IArticleRepository _articleRepository;
+    private readonly ILogger<ArticlesController> _logger;
     const int pageSize = 30;
 
-    public ArticlesController(IArticleRepository articleRepository)
+    public ArticlesController(IArticleRepository articleRepository, ILogger<ArticlesController> logger)
     {
         _articleRepository = articleRepository;
+        _logger = logger;
     }
 
     [HttpPost("CreateArticle")]
@@ -36,11 +38,11 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception e)
         {
-            MonitorService.MonitorService.Log.Error("Error creating article: {Error}", e.Message);
+            _logger.LogError("Error creating article: {Error}", e.Message);
             throw;
         }
         
-        MonitorService.MonitorService.Log.Information("Creating new article by Author '{Author}' with Title '{Title}' at Articles'{Continent}' database", request.Author, request.Title, request.Continent.ToString());
+        _logger.LogInformation("Creating new article by Author '{Author}' with Title '{Title}' at Articles'{Continent}' database", request.Author, request.Title, request.Continent.ToString());
         
         return CreatedAtAction(nameof(GetById), new { id = newArticle.Id }, newArticle);
     }
@@ -55,7 +57,8 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
-            MonitorService.MonitorService.Log.Error("Error retrieving articles: {Error}", ex.Message);
+            _logger.LogError("Error retrieving articles: {Error}", ex.Message);
+            
             return BadRequest($"Error retrieving articles: {ex.Message}");
         }
 
@@ -78,7 +81,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
-            MonitorService.MonitorService.Log.Error("Error retrieving articles: {Error}", ex.Message);
+            _logger.LogError("Error retrieving articles: {Error}", ex.Message);
             return BadRequest($"Error retrieving articles: {ex.Message}");
         }
 
@@ -95,7 +98,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
-            MonitorService.MonitorService.Log.Error("Error fetching article: {Error}", ex.Message);
+            _logger.LogError("Error fetching article: {Error}", ex.Message);
             return BadRequest($"Error fetching article: {ex.Message}");
         }
         
@@ -117,7 +120,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
-            MonitorService.MonitorService.Log.Error("Error updating article: {Error}", ex.Message);
+            _logger.LogError("Error updating article: {Error}", ex.Message);
             return BadRequest($"Error updating article: {ex.Message}");
         }
         
@@ -137,7 +140,7 @@ public class ArticlesController : ControllerBase
         }
         catch (Exception ex)
         {
-            MonitorService.MonitorService.Log.Error("Error deleting article: {Error}", ex.Message);
+            _logger.LogError("Error deleting article: {Error}", ex.Message);
             return BadRequest($"Error deleting article: {ex.Message}");
         }
 
