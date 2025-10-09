@@ -34,6 +34,8 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IArticleConsumer, ArticleConsumer>();
 builder.Services.AddHostedService<ArticleConsumerService>(); 
 
+// register the background service for caching recent articles
+builder.Services.AddHostedService<RecentArticleCacheService>();
 
 builder.Services.AddScoped<ArticleRepository>();
 builder.Services.AddScoped<IArticleRepository, CachingArticleRepository>(sp => 
@@ -41,7 +43,10 @@ builder.Services.AddScoped<IArticleRepository, CachingArticleRepository>(sp =>
     // Create the decorator, injecting the original repository and the Redis client
     var dbRepository = sp.GetRequiredService<ArticleRepository>();
     var redisMultiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
-    return new CachingArticleRepository(dbRepository, redisMultiplexer);
+    
+    var logger = sp.GetRequiredService<ILogger<CachingArticleRepository>>();
+
+    return new CachingArticleRepository(dbRepository, redisMultiplexer, logger);
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -66,7 +71,7 @@ using (var scope = app.Services.CreateScope())
         {
             using var context = contextFactory.Create(continent);
             await context.Database.EnsureCreatedAsync();
-            logger.LogInformation($"✓ Database ready for {continent}");
+            logger.LogInformation($"Database ready for {continent}");
         }
         catch (Exception ex)
         {

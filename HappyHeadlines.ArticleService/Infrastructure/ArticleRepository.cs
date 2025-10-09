@@ -22,13 +22,14 @@ public class ArticleRepository : IArticleRepository
             .ToListAsync();
     }
     
-    public async Task<List<Article>> GetAllByDate(DateTime date, Continent continent, int pageNumber = 1, int pageSize = 10)
+    public async Task<List<Article>> GetAllRecent(Continent continent, int pageNumber = 1, int pageSize = 30) // last 14 days
     {
-        DateTime nextDay = date.AddDays(1);
-        
+        DateTime fourteenDaysAgo = DateTime.UtcNow.AddDays(-14);
+    
         await using var context = _contextFactory.Create(continent);
         return await context.Articles
-            .Where(a => a.PublishedAt >= date && a.PublishedAt < nextDay)
+            .Where(a => a.PublishedAt >= fourteenDaysAgo)
+            .OrderByDescending(a => a.PublishedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

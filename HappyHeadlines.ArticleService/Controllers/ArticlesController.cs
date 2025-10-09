@@ -65,19 +65,14 @@ public class ArticlesController : ControllerBase
         return Ok(articles);
     }
     
-    [HttpGet("GetArticlesByDate")]
-    public async Task<IActionResult> GetArticlesByDate(DateTime date, int page = 1, Continent continent = Continent.Global)
+    [HttpGet("GetAllRecent")]
+    public async Task<IActionResult> GetAllRecent(int page = 1, Continent continent = Continent.Global)
     {
-        if (date == null)
-        {
-            return BadRequest("No date provided");
-        }
-        
         List<Article> articles;
         try
         {
-            DateTime utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-            articles = await _articleRepository.GetAllByDate(utcDate, continent, page, pageSize);
+            // retrieves top pageSize articles from last 14 days
+            articles = await _articleRepository.GetAllRecent( continent, page, pageSize);
         }
         catch (Exception ex)
         {
