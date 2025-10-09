@@ -1,9 +1,11 @@
+using System.Collections;
 using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.ArticleService.Services;
 using HappyHeadlines.MonitorService;
 using HappyHeadlines.ArticleService.Interfaces;
 using Serilog;
+using StackExchange.Redis;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
 
@@ -16,12 +18,35 @@ if (builder.Environment.IsDevelopment())
     DotNetEnv.Env.Load();
 }
 
+builder.Configuration.AddEnvironmentVariables();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => 
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    string? redisUrl = configuration["REDIS__URL"] ?? configuration["Redis:Url"];
+
+    if (string.IsNullOrEmpty(redisUrl))
+    {
+        throw new InvalidOperationException("REDIS__URL is not set in the configuration.");
+    }
+    
+    return ConnectionMultiplexer.Connect(redisUrl);
+});
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+//builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddSingleton<IArticleConsumer, ArticleConsumer>();
 builder.Services.AddHostedService<ArticleConsumerService>(); 
 
+
+builder.Services.AddScoped<ArticleRepository>();
+builder.Services.AddScoped<IArticleRepository, CachingArticleRepository>(sp => 
+{
+    // Create the decorator, injecting the original repository and the Redis client
+    var dbRepository = sp.GetRequiredService<ArticleRepository>();
+    var redisMultiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
+    return new CachingArticleRepository(dbRepository, redisMultiplexer);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

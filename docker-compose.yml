@@ -17,6 +17,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+      
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   
   article-service:
     build:
@@ -30,6 +43,8 @@ services:
        postgres:
           condition: service_healthy
        message-broker: 
+         condition: service_healthy
+       redis:
          condition: service_healthy
                 
   draft-service:
@@ -55,6 +70,8 @@ services:
         - ./HappyHeadlines.CommentService/.env
     depends_on:
         postgres:
+          condition: service_healthy
+        redis:
           condition: service_healthy
           
   profanity-service:

@@ -11,6 +11,16 @@
   ConnectionStrings__Australia=Host=localhost;Database=ArticlesAustralia;Username=x;Password=
   ConnectionStrings__SouthAmerica=Host=localhost;Database=ArticlesSouthAmerica;Username=x;Password=
 
+  REDIS__URL=localhost:6379
+
+  RABBITMQ_HOSTNAME=message-broker
+  RABBITMQ_PORT=5672
+  RABBITMQ_USERNAME=guest
+  RABBITMQ_PASSWORD=guest
+  RABBITMQ_QUEUE_NAME=ArticleQueue
+  RABBITMQ_VIRTUAL_HOST=/
+  RABBITMQ_PREFETCH_COUNT=1
+
 ## Setting up the database
 + Create the databases in your Postgres instance
     - ArticlesGlobal
