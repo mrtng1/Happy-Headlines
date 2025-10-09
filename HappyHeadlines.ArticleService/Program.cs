@@ -1,13 +1,12 @@
 using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.ArticleService.Services;
-using HappyHeadlines.MonitorService;
 using HappyHeadlines.ArticleService.Interfaces;
+using Prometheus;
 using Serilog;
+using StackExchange.Redis;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
 
-
-MonitorService.Initialize();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +15,40 @@ if (builder.Environment.IsDevelopment())
     DotNetEnv.Env.Load();
 }
 
+builder.Configuration.AddEnvironmentVariables();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => 
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    string? redisUrl = configuration["REDIS__URL"] ?? configuration["Redis:Url"];
+
+    if (string.IsNullOrEmpty(redisUrl))
+    {
+        throw new InvalidOperationException("REDIS__URL is not set in the configuration.");
+    }
+    
+    return ConnectionMultiplexer.Connect(redisUrl);
+});
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+//builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddSingleton<IArticleConsumer, ArticleConsumer>();
 builder.Services.AddHostedService<ArticleConsumerService>(); 
 
+// register the background service for caching recent articles
+builder.Services.AddHostedService<RecentArticleCacheService>();
+
+builder.Services.AddScoped<ArticleRepository>();
+builder.Services.AddScoped<IArticleRepository, CachingArticleRepository>(sp => 
+{
+    // Create the decorator, injecting the original repository and the Redis client
+    var dbRepository = sp.GetRequiredService<ArticleRepository>();
+    var redisMultiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
+    
+    var logger = sp.GetRequiredService<ILogger<CachingArticleRepository>>();
+
+    return new CachingArticleRepository(dbRepository, redisMultiplexer, logger);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -45,7 +72,7 @@ using (var scope = app.Services.CreateScope())
         {
             using var context = contextFactory.Create(continent);
             await context.Database.EnsureCreatedAsync();
-            logger.LogInformation($"✓ Database ready for {continent}");
+            logger.LogInformation($"Database ready for {continent}");
         }
         catch (Exception ex)
         {
@@ -64,8 +91,10 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+app.MapMetrics();
 
+app.UseAuthorization();
 app.MapControllers();
 
 

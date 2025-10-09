@@ -17,6 +17,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+      
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   
   article-service:
     build:
@@ -30,6 +43,8 @@ services:
        postgres:
           condition: service_healthy
        message-broker: 
+         condition: service_healthy
+       redis:
          condition: service_healthy
                 
   draft-service:
@@ -55,6 +70,8 @@ services:
         - ./HappyHeadlines.CommentService/.env
     depends_on:
         postgres:
+          condition: service_healthy
+        redis:
           condition: service_healthy
           
   profanity-service:
@@ -166,6 +183,23 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+      
+      
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
         
 volumes:
   postgres-data:
