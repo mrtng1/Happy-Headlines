@@ -15,8 +15,8 @@ public class CachingArticleRepository : IArticleRepository
     
     
     // Metrics 
-    private static readonly Counter CacheHits = Metrics.CreateCounter("cache_hits_total", "Number of cache hits", "layer");
-    private static readonly Counter CacheMisses = Metrics.CreateCounter("cache_misses_total", "Number of cache misses", "layer");
+    private static readonly Counter CacheHits = Metrics.CreateCounter("article_cache_hits_total", "Number of cache hits", "layer");
+    private static readonly Counter CacheMisses = Metrics.CreateCounter("article_cache_misses_total", "Number of cache misses", "layer");
 
     public CachingArticleRepository(ArticleRepository decorated, IConnectionMultiplexer redis, ILogger<CachingArticleRepository> logger)
     {

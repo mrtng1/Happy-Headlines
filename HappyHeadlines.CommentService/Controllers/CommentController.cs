@@ -14,7 +14,7 @@ namespace HappyHeadlines.CommentService.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
-        private const int PageSize = 30;
+        private const int PageSize = 50;
 
         public CommentController(ICommentService commentService)
         {

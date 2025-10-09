@@ -2,6 +2,10 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'article-service' 
+  - job_name: 'article-service'
     static_configs:
       - targets: ['host.docker.internal:5189'] # article-service:8080 if docker .... else host.docker.internal:5189
+
+  - job_name: 'comment-service'
+    static_configs:
+      - targets: ['host.docker.internal:5024']  # comment-service:8080 if docker .... else host.docker.internal:5024

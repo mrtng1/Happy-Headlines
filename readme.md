@@ -32,7 +32,7 @@ prerequisite for Prometheus & Grafana startup:
 + To Run Prometheus container manually without docker-compose use:
 `docker run -d --name prometheus -p 9090:9090 --network monitoring -v "$(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml" prom/prometheus`
 
-+ query prometheus for `cache_hits_total` or `cache_misses_total`
++ query prometheus for `article_cache_hits_total` or `article_cache_misses_total`
 
 Prometheus stores the metrics in a queryable database, from /metrics endpoint of each microservice.
 
