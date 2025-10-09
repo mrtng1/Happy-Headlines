@@ -1,6 +1,7 @@
 using System.Text.Json;
 using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Interfaces;
+using Prometheus;
 using StackExchange.Redis;
 
 namespace HappyHeadlines.ArticleService.Infrastructure;
@@ -11,6 +12,11 @@ public class CachingArticleRepository : IArticleRepository
     private readonly IDatabase _cache;
     private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
     private readonly ILogger<CachingArticleRepository> _logger;
+    
+    
+    // Metrics 
+    private static readonly Counter CacheHits = Metrics.CreateCounter("cache_hits_total", "Number of cache hits", "layer");
+    private static readonly Counter CacheMisses = Metrics.CreateCounter("cache_misses_total", "Number of cache misses", "layer");
 
     public CachingArticleRepository(ArticleRepository decorated, IConnectionMultiplexer redis, ILogger<CachingArticleRepository> logger)
     {
@@ -28,10 +34,12 @@ public class CachingArticleRepository : IArticleRepository
         {
             // Cache Hit
             _logger.LogInformation("CACHE HIT");
+            CacheHits.WithLabels("on_demand").Inc();
             return JsonSerializer.Deserialize<List<Article>>(cachedArticles!) ?? new List<Article>();
         }
 
         // Cache Miss
+        CacheMisses.WithLabels("on_demand").Inc();
         List<Article> articles = await _decorated.GetAll(continent, pageNumber, pageSize);
 
         // If missed -> save the re-retrieved articles to cache
@@ -52,6 +60,7 @@ public class CachingArticleRepository : IArticleRepository
 
         if (cachedArticle.HasValue)
         {
+            CacheHits.WithLabels("on_demand").Inc();
             return JsonSerializer.Deserialize<Article>(cachedArticle!);
         }
 
@@ -68,8 +77,8 @@ public class CachingArticleRepository : IArticleRepository
     public async Task<Article> Create(Article newArticle)
     {
         Article createdArticle = await _decorated.Create(newArticle);
-        // After creating, the old cache for lists is invalid, but we'll let it expire naturally.
-        // We can add the new article to the cache immediately.
+        // After creating, the old cache for lists is invalid
+        // We can add the new article to the cache immediately
         string cacheKey = $"article:{createdArticle.Continent}:{createdArticle.Id}";
         await _cache.StringSetAsync(cacheKey, JsonSerializer.Serialize(createdArticle), _cacheDuration);
         return createdArticle;
@@ -115,6 +124,7 @@ public class CachingArticleRepository : IArticleRepository
         // cache found
         if (cachedArticles.HasValue)
         {
+            CacheHits.WithLabels("pre_warmed").Inc();
             _logger.LogInformation("PRE-WARMED CACHE HIT: Found recent global articles in the cache using key '{CacheKey}'.", cacheKey);
         
             // Deserialize the full list of articles from the cache
@@ -129,7 +139,8 @@ public class CachingArticleRepository : IArticleRepository
             return paginatedArticles;
         }
 
-        // No cache found -> log a warning ?
+        // Cache MISS -> log a warning ?
+        CacheMisses.WithLabels("pre_warmed").Inc();
         _logger.LogWarning("PRE-WARMED CACHE MISS: Did not find key '{CacheKey}'. Fetching from database as a fallback.", cacheKey);
         return await _decorated.GetAllRecent(continent, pageNumber, pageSize);
     }

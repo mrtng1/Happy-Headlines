@@ -1,11 +1,13 @@
 ﻿# Happy Headlines - Development of Large Systems
 
-## X-axis split
+## System Architecture
+
+###  X-axis split
 
 + Creates 3 replicas of the ArticleService
 + Run with `docker-compose up` from project root directory
 
-## Y-axis split
+### Y-axis split
 
 + The database is split into 7 different region databases plus 1 global database
 
@@ -19,9 +21,26 @@
 
 ## Caching
 
+prerequisite for Prometheus & Grafana startup:
+`docker network create monitoring`
+
+### Redis
 + To Run Redis container manually without docker-compose use:
 `docker run -d --name happy-headlines-redis -p 6379:6379 redis:alpine`
 
+### Prometheus
++ To Run Prometheus container manually without docker-compose use:
+`docker run -d --name prometheus -p 9090:9090 --network monitoring -v "$(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml" prom/prometheus`
+
++ query prometheus for `cache_hits_total` or `cache_misses_total`
+
+Prometheus stores the metrics in a queryable database, from /metrics endpoint of each microservice.
+
+### Grafana
+`docker run -d --name grafana -p 3000:3000 --network monitoring grafana/grafana`
++ login with admin/admin
+
+Grafana is used to visualize the metrics stored in Prometheus.
 
 ## General Setup
 

@@ -2,6 +2,7 @@ using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.ArticleService.Services;
 using HappyHeadlines.ArticleService.Interfaces;
+using Prometheus;
 using Serilog;
 using StackExchange.Redis;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
@@ -90,8 +91,10 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+app.MapMetrics();
 
+app.UseAuthorization();
 app.MapControllers();
 
 
