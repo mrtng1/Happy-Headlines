@@ -1,0 +1,65 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    # list of services to build
+    strategy:
+      matrix:
+        service:
+          - name: article-service
+            dockerfile: HappyHeadlines.ArticleService/Dockerfile
+          - name: draft-service
+            dockerfile: HappyHeadlines.DraftService/Dockerfile
+          - name: comment-service
+            dockerfile: HappyHeadlines.CommentService/Dockerfile
+          - name: profanity-service
+            dockerfile: HappyHeadlines.ProfanityService/Dockerfile
+          - name: publisher-service
+            dockerfile: HappyHeadlines.PublisherService/Dockerfile
+          - name: newsletter-service
+            dockerfile: HappyHeadlines.NewsletterService/Dockerfile
+          - name: hh-webapp
+            dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.service.name }}
+          
+          tags: |
+            type=sha,prefix=
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.service.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
