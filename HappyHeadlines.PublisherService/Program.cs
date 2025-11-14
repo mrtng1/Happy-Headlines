@@ -16,9 +16,12 @@ builder.Services.AddOpenTelemetry()
             .SetResourceBuilder(
                 ResourceBuilder.CreateDefault()
                     .AddService(serviceName: "PublisherService", serviceVersion: "1.0.0"))
-            .AddAspNetCoreInstrumentation() 
-            //.AddRabbitMQInstrumentation()  
-            .AddConsoleExporter());
+            .AddAspNetCoreInstrumentation()
+            .AddRabbitMQInstrumentation()  
+            .AddZipkinExporter(options =>
+            {
+                options.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+            }));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

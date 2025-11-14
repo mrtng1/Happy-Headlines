@@ -74,17 +74,13 @@ builder.Services.AddOpenTelemetry()
                     .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
             .AddHttpClientInstrumentation()
             .AddAspNetCoreInstrumentation()
-            //.AddEntityFrameworkCoreInstrumentation()
-
-            // --- THIS IS THE CHANGE ---
-            // Remove .AddSeqExporter() and add this:
+            .AddRabbitMQInstrumentation() 
+            .AddEntityFrameworkCoreInstrumentation()
+            
             .AddZipkinExporter(options =>
             {
-                // Use the Docker service name.
-                // The default Zipkin API endpoint is /api/v2/spans
                 options.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
             });
-        // --------------------------
     });
 
 var app = builder.Build();
