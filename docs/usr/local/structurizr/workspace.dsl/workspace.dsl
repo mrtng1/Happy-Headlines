@@ -3,172 +3,170 @@ workspace "HappyHeadlines" "C4 model of the HappyHeadlines system" {
   model {
 
     // People
-    person pub "Publisher" "Writes, saves drafts, publishes."
-    person rdr "Reader"    "Reads articles, comments, subscribes."
+    pub = person "Publisher" "Writes, saves drafts, publishes."
+    rdr = person "Reader"    "Reads articles, comments, subscribes."
 
     // System + containers
-    softwareSystem hh "HappyHeadlines" "Positive news site." {
+    hh = softwareSystem "HappyHeadlines" "Positive news site." {
 
-      container lb "Load Balancer" {
+      lb = container "Load Balancer" {
         technology "Nginx"
         description "Reverse proxy for UI and APIs."
       }
 
-      container webapp "WebApp" {
+      webapp = container "WebApp" {
         technology "Blazor (WASM)"
         description "UI for publisher and reader."
       }
 
-      container draftSvc "DraftService" {
+      draftSvc = container "DraftService" {
         technology "ASP.NET Core API"
         description "Create/Update/Get drafts."
       }
 
-      container publisherSvc "PublisherService" {
+      publisherSvc = container "PublisherService" {
         technology "ASP.NET Core API"
         description "Finalise publish; profanity check; enqueue."
       }
 
-      container articleSvc "ArticleService" {
+      articleSvc = container "ArticleService" {
         technology "ASP.NET Core API"
         description "Persist/fetch articles; consume from queue."
       }
 
-      container commentSvc "CommentService" {
+      commentSvc = container "CommentService" {
         technology "ASP.NET Core API"
         description "Create/Get comments; profanity check."
       }
 
-      container profanitySvc "ProfanityService" {
+      profanitySvc = container "ProfanityService" {
         technology "ASP.NET Core API"
         description "Words list / moderation."
       }
 
-      container newsletterSvc "NewsletterService" {
+      newsletterSvc = container "NewsletterService" {
         technology "ASP.NET Core API + Quartz"
         description "Immediate + daily digests."
       }
 
-      container subsSvc "SubscriptionsService" {
+      subsSvc = container "SubscriptionsService" {
         technology "ASP.NET Core API"
         description "Store subscribers (SQLite)."
       }
 
-      container draftDb "DraftDatabase" {
+      draftDb = container "DraftDatabase" {
         technology "PostgreSQL"
         tags "Database"
         description "Drafts."
       }
 
-      container articleDb "ArticleDatabase" {
+      articleDb = container "ArticleDatabase" {
         technology "PostgreSQL"
         tags "Database"
         description "Articles by continent."
       }
 
-      container commentDb "CommentDatabase" {
+      commentDb = container "CommentDatabase" {
         technology "PostgreSQL"
         tags "Database"
         description "Comments."
       }
 
-      container profanityDb "ProfanityDatabase" {
+      profanityDb = container "ProfanityDatabase" {
         technology "File/DB"
         tags "Database"
         description "Prohibited words."
       }
 
-      container subsDb "SubscriberDatabase" {
+      subsDb = container "SubscriberDatabase" {
         technology "SQLite"
         tags "Database"
         description "Subscribers."
       }
 
-      container mq "Message Broker" {
+      mq = container "Message Broker" {
         technology "RabbitMQ"
         description "Queues and exchanges."
       }
 
-      container articleQ "ArticleQueue" {
+      articleQ = container "ArticleQueue" {
         technology "RabbitMQ"
         tags "Queue"
         description "Articles ready for publication."
       }
 
-      container subsQ "SubscriberQueue (optional)" {
+      subsQ = container "SubscriberQueue (optional)" {
         technology "RabbitMQ"
         tags "Queue"
         description "New subscribers broadcast."
       }
 
-      container mailhog "MailHog" {
+      mailhog = container "MailHog" {
         technology "SMTP sink"
         description "Captures emails in development."
       }
     }
     
     // People -> UI
-    pub -> hh.webapp "Use" "HTTP(S) via LB"
-    rdr -> hh.webapp "Use" "HTTP(S) via LB"
+    pub -> webapp "Use" "HTTP(S) via LB"
+    rdr -> webapp "Use" "HTTP(S) via LB"
 
     // LB in front of UI+APIs
-    hh.lb -> hh.webapp        "Proxy" "HTTP"
-    hh.lb -> hh.draftSvc      "Proxy" "HTTP"
-    hh.lb -> hh.publisherSvc  "Proxy" "HTTP"
-    hh.lb -> hh.articleSvc    "Proxy" "HTTP"
-    hh.lb -> hh.commentSvc    "Proxy" "HTTP"
-    hh.lb -> hh.profanitySvc  "Proxy" "HTTP"
-    hh.lb -> hh.newsletterSvc "Proxy" "HTTP"
-    hh.lb -> hh.subsSvc       "Proxy" "HTTP"
+    lb -> webapp        "Proxy" "HTTP"
+    lb -> draftSvc      "Proxy" "HTTP"
+    lb -> publisherSvc  "Proxy" "HTTP"
+    lb -> articleSvc    "Proxy" "HTTP"
+    lb -> commentSvc    "Proxy" "HTTP"
+    lb -> profanitySvc  "Proxy" "HTTP"
+    lb -> newsletterSvc "Proxy" "HTTP"
+    lb -> subsSvc       "Proxy" "HTTP"
 
     // Draft flow
-    hh.webapp   -> hh.draftSvc "Create/Update/Get drafts" "HTTP/JSON"
-    hh.draftSvc -> hh.draftDb  "CRUD" "SQL"
+    webapp   -> draftSvc "Create/Update/Get drafts" "HTTP/JSON"
+    draftSvc -> draftDb  "CRUD" "SQL"
 
     // Publish flow
-    hh.webapp       -> hh.publisherSvc "POST /publish" "HTTP/JSON"
-    hh.publisherSvc -> hh.profanitySvc "Check content" "HTTP/JSON"
-    hh.publisherSvc -> hh.mq           "Publish article" "AMQP"
-    hh.mq           -> hh.articleQ     "Hold"
-    hh.articleSvc   -> hh.articleQ     "Consume" "AMQP"
-    hh.articleSvc   -> hh.articleDb    "Persist" "SQL"
+    webapp       -> publisherSvc "POST /publish" "HTTP/JSON"
+    publisherSvc -> profanitySvc "Check content" "HTTP/JSON"
+    publisherSvc -> mq           "Publish article" "AMQP"
+    mq           -> articleQ     "Hold"
+    articleSvc   -> articleQ     "Consume" "AMQP"
+    articleSvc   -> articleDb    "Persist" "SQL"
 
     // Read flow
-    hh.webapp -> hh.articleSvc "Get latest/highlight" "HTTP/JSON"
+    webapp -> articleSvc "Get latest/highlight" "HTTP/JSON"
 
     // Comments flow
-    hh.webapp     -> hh.commentSvc   "Create/Get comments" "HTTP/JSON"
-    hh.commentSvc -> hh.profanitySvc "Check comment" "HTTP/JSON"
-    hh.commentSvc -> hh.commentDb    "Persist" "SQL"
+    webapp     -> commentSvc   "Create/Get comments" "HTTP/JSON"
+    commentSvc -> profanitySvc "Check comment" "HTTP/JSON"
+    commentSvc -> commentDb    "Persist" "SQL"
 
     // Subscriptions + Newsletter
-    hh.webapp        -> hh.subsSvc      "POST /api/Subscriptions" "HTTP/JSON"
-    hh.subsSvc       -> hh.subsDb       "Persist subscriber" "SQLite"
-    hh.subsSvc       -> hh.mq           "Publish new subscriber (optional)" "AMQP"
-    hh.mq            -> hh.subsQ        "Hold"
-    hh.newsletterSvc -> hh.subsDb       "Read subscribers" "SQLite"
-    hh.newsletterSvc -> hh.articleSvc   "Fetch recent articles" "HTTP/JSON"
-    hh.newsletterSvc -> hh.mailhog      "Send emails" "SMTP"
+    webapp        -> subsSvc      "POST /api/Subscriptions" "HTTP/JSON"
+    subsSvc       -> subsDb       "Persist subscriber" "SQLite"
+    subsSvc       -> mq           "Publish new subscriber (optional)" "AMQP"
+    mq            -> subsQ        "Hold"
+    newsletterSvc -> subsDb       "Read subscribers" "SQLite"
+    newsletterSvc -> articleSvc   "Fetch recent articles" "HTTP/JSON"
+    newsletterSvc -> mailhog      "Send emails" "SMTP"
 
     // Profanity data
-    hh.profanitySvc  -> hh.profanityDb  "Load/Manage words" "I/O"
+    profanitySvc  -> profanityDb  "Load/Manage words" "I/O"
   }
 
   views {
 
-    systemContext hhCtx "System Context" {
+    systemContext hh SystemContext {
       include *
       autoLayout lr
     }
 
-    container hh "Container View" {
+    container hh ContainerView {
       include *
-      include element "pub"
-      include element "rdr"
       autoLayout lr
     }
 
-    container hh "Publish Pipeline" {
+    container hh PublishPipeline {
       autoLayout lr
       include lb
       include webapp
@@ -178,10 +176,10 @@ workspace "HappyHeadlines" "C4 model of the HappyHeadlines system" {
       include articleQ
       include articleSvc
       include articleDb
-      include element "pub"
+      include pub
     }
 
-    container hh "Reader & Comments" {
+    container hh ReaderAndComments {
       autoLayout lr
       include lb
       include webapp
@@ -190,10 +188,10 @@ workspace "HappyHeadlines" "C4 model of the HappyHeadlines system" {
       include profanitySvc
       include articleDb
       include commentDb
-      include element "rdr"
+      include rdr
     }
 
-    container hh "Newsletter" {
+    container hh Newsletter {
       autoLayout lr
       include lb
       include webapp
@@ -207,11 +205,30 @@ workspace "HappyHeadlines" "C4 model of the HappyHeadlines system" {
     }
 
     styles {
-      element "Person"    { shape person;     background #0B5F6D; color #ffffff; }
-      element "Container" { shape roundedbox; background #177E89; color #ffffff; }
-      element "Database"  { shape cylinder;   background #323031; color #ffffff; }
-      element "Queue"     { shape pipe;       background #A23B72; color #ffffff; }
-      relationship        { routing orthogonal; color #666666; }
+      element "Person" {
+        shape person
+        background #0B5F6D
+        color #ffffff
+      }
+      element "Container" {
+        shape roundedbox
+        background #177E89
+        color #ffffff
+      }
+      element "Database" {
+        shape cylinder
+        background #323031
+        color #ffffff
+      }
+      element "Queue" {
+        shape pipe
+        background #A23B72
+        color #ffffff
+      }
+      relationship "Relationship" {
+        routing orthogonal
+        color #666666
+      }
     }
   }
 }

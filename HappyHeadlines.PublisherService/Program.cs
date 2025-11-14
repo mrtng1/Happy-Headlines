@@ -1,10 +1,24 @@
 using DotNetEnv;
 using HappyHeadlines.PublisherService.Interfaces;
 using HappyHeadlines.PublisherService.Services;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Instrumentation.AspNetCore;
 
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+        tracerProviderBuilder
+            .AddSource("HappyHeadlines.PublisherService") // Tracer name
+            .SetResourceBuilder(
+                ResourceBuilder.CreateDefault()
+                    .AddService(serviceName: "PublisherService", serviceVersion: "1.0.0"))
+            .AddAspNetCoreInstrumentation() 
+            //.AddRabbitMQInstrumentation()  
+            .AddConsoleExporter());
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

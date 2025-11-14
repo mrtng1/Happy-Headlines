@@ -5,7 +5,7 @@ services:
   postgres:
     image: postgres:15
     restart: always
-    env_file: 
+    env_file:
       - ./db.env
     ports:
       - "5432:5432"
@@ -17,7 +17,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      
+  
   redis:
     image: redis:alpine
     restart: always
@@ -40,13 +40,13 @@ services:
     env_file:
       - ./HappyHeadlines.ArticleService/.env
     depends_on:
-       postgres:
-          condition: service_healthy
-       message-broker: 
-         condition: service_healthy
-       redis:
-         condition: service_healthy
-                
+      postgres:
+        condition: service_healthy
+      message-broker:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  
   draft-service:
     build:
       context: .
@@ -54,12 +54,12 @@ services:
     deploy:
       replicas: 2 # amount of instances
     env_file:
-        - ./HappyHeadlines.DraftService/.env
+      - ./HappyHeadlines.DraftService/.env
     depends_on:
-        postgres:
-          condition: service_healthy
-          
-          
+      postgres:
+        condition: service_healthy
+  
+  
   comment-service:
     build:
       context: .
@@ -67,13 +67,13 @@ services:
     deploy:
       replicas: 2
     env_file:
-        - ./HappyHeadlines.CommentService/.env
+      - ./HappyHeadlines.CommentService/.env
     depends_on:
-        postgres:
-          condition: service_healthy
-        redis:
-          condition: service_healthy
-          
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  
   profanity-service:
     build:
       context: .
@@ -81,8 +81,8 @@ services:
     deploy:
       replicas: 1
     depends_on:
-        postgres:
-          condition: service_healthy
+      postgres:
+        condition: service_healthy
     volumes:
       - profanity-data:/app/data
   
@@ -93,10 +93,10 @@ services:
     deploy:
       replicas: 1
     env_file:
-        - ./HappyHeadlines.PublisherService/.env
+      - ./HappyHeadlines.PublisherService/.env
     depends_on:
       message-broker:
-          condition: service_healthy
+        condition: service_healthy
 
   newsletter-service:
     build:
@@ -115,14 +115,14 @@ services:
       Email__Smtp__Host: mailhog
       Email__Smtp__Port: "1025"
     volumes:
-      - ./data:/app/data 
+      - ./data:/app/data
     depends_on:
       message-broker:
         condition: service_healthy
       mailhog:
         condition: service_started
-
-     
+  
+  
   mailhog:
     image: mailhog/mailhog
     ports:
@@ -144,7 +144,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-        
+  
   load-balancer:
     image: nginx:latest
     ports:
@@ -160,9 +160,9 @@ services:
       - newsletter-service
 
   hh-webapp:
-   build:
-    context: .
-    dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
+    build:
+      context: .
+      dockerfile: HappyHeadlines.WebApp/HappyHeadlines.WebApp/Dockerfile
 
   c4:
     image: structurizr/lite:latest
@@ -183,8 +183,12 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SEQ_FIRSTRUN_NOAUTHENTICATION=true
-      
-      
+  
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+  
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -200,9 +204,10 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
-        
+
 volumes:
   postgres-data:
   happy-headlines-data:
   profanity-data:
-  newsletter-data: {}  
+  newsletter-data: {}
+  redis-data:

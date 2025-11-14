@@ -82,11 +82,11 @@ app.UseRouting();
 app.MapMetrics();
 
 // migrations on startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<CommentDbContext>();
-    dbContext.Database.Migrate();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<CommentDbContext>();
+//     dbContext.Database.Migrate();
+// }
 
 
 app.Run();

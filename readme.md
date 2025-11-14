@@ -42,6 +42,10 @@ Prometheus stores the metrics in a queryable database, from /metrics endpoint of
 
 Grafana is used to visualize the metrics stored in Prometheus.
 
+### Zipkin - Tracing
+`docker run -d --name happy-headlines-zipkin -p 9411:9411 --network monitoring openzipkin/zipkin:latest`
+
+
 ## General Setup
 
 ### Database setup

@@ -2,10 +2,13 @@ using HappyHeadlines.ArticleService.Entities;
 using HappyHeadlines.ArticleService.Infrastructure;
 using HappyHeadlines.ArticleService.Services;
 using HappyHeadlines.ArticleService.Interfaces;
+using OpenTelemetry.Resources;
 using Prometheus;
 using Serilog;
 using StackExchange.Redis;
 using DbContextFactory = HappyHeadlines.ArticleService.Infrastructure.ArticleDbContextFactory;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +60,32 @@ builder.Services.AddSingleton<ArticleDbContextFactory>();
 
 builder.Host.UseSerilog((context, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration));
+
+var serviceName = "ArticleService";
+var serviceVersion = "1.0.0";
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+    {
+        tracerProviderBuilder
+            .AddSource(serviceName)
+            .SetResourceBuilder(
+                ResourceBuilder.CreateDefault()
+                    .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+            .AddHttpClientInstrumentation()
+            .AddAspNetCoreInstrumentation()
+            //.AddEntityFrameworkCoreInstrumentation()
+
+            // --- THIS IS THE CHANGE ---
+            // Remove .AddSeqExporter() and add this:
+            .AddZipkinExporter(options =>
+            {
+                // Use the Docker service name.
+                // The default Zipkin API endpoint is /api/v2/spans
+                options.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+            });
+        // --------------------------
+    });
 
 var app = builder.Build();
 
